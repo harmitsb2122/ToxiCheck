@@ -133,14 +133,22 @@ parcelRequire = (function (modules, cache, entry, globalName) {
         }
         function main() {
           window.addEventListener("input", async function () {
-            const collection = document.getElementsByClassName(
+            const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
             );
+            // const collection2 = document.getElementsByClassName(
+            //   "comment-body markdown-body js-preview-body"
+            // );
 
-            const elementlist = collection;
+            const array1 = [...collection1];
+            // const array2 = [...collection2];
+
+            // const elementlist = array1.concat(array2);
+            const elementlist = array1;
 
             var i = 0;
             for (i = 0; i < elementlist.length; i++) {
+              console.log(elementlist[i].innerText);
               if (elementlist[i].innerText.length > 0) {
                 var data = JSON.stringify({
                   data: [[elementlist[i].innerText]],
@@ -163,11 +171,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           window.addEventListener("mouseover", async function () {
             const collection1 = document.getElementsByClassName("ii gt");
             const collection2 = document.getElementsByClassName("comment-copy");
+            const collection3 = document.getElementsByClassName(
+              "d-block comment-body markdown-body  js-comment-body"
+            );
+            const collection4 = document.getElementsByClassName(
+              "comment-body markdown-body js-preview-body"
+            );
 
             const array1 = [...collection1];
             const array2 = [...collection2];
+            const array3 = [...collection3];
+            const array4 = [...collection4];
 
-            const elementlist = array1.concat(array2);
+            const elementlist1 = array1.concat(array2);
+            const elementlist2 = elementlist1.concat(array3);
+            const elementlist = elementlist2.concat(array4);
 
             var i = 0;
             for (i = 0; i < elementlist.length; i++) {
