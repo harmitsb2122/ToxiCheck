@@ -177,15 +177,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const collection4 = document.getElementsByClassName(
               "comment-body markdown-body js-preview-body"
             );
+            const collection5 = document.getElementsByClassName("h3YV2d");
+            const collection6 = document.getElementsByClassName("ras4vb");
 
             const array1 = [...collection1];
             const array2 = [...collection2];
             const array3 = [...collection3];
             const array4 = [...collection4];
+            const array5 = [...collection5];
+            const array6 = [...collection6];
 
             const elementlist1 = array1.concat(array2);
             const elementlist2 = elementlist1.concat(array3);
-            const elementlist = elementlist2.concat(array4);
+            const elementlist3 = elementlist2.concat(array4);
+            const elementlist4 = elementlist3.concat(array5);
+            const elementlist = elementlist4.concat(array6);
 
             var i = 0;
             for (i = 0; i < elementlist.length; i++) {
