@@ -132,6 +132,34 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
         }
         function main() {
+          window.addEventListener("input", async function () {
+            const collection = document.getElementsByClassName(
+              "Am Al editable LW-avf tS-tW"
+            );
+
+            const elementlist = collection;
+
+            var i = 0;
+            for (i = 0; i < elementlist.length; i++) {
+              if (elementlist[i].innerText.length > 0) {
+                var data = JSON.stringify({
+                  data: [[elementlist[i].innerText]],
+                });
+
+                await getResult(data).then((ans) => {
+                  if (ans != 6) {
+                    elementlist[i].style.textDecoration = "underline red";
+                  } else {
+                    elementlist[i].style.textDecoration = "none";
+                  }
+                });
+                elementlist[i].addEventListener("click", function () {
+                  this.style.textDecoration = "none";
+                });
+              }
+            }
+          });
+
           window.addEventListener("mouseover", async function () {
             const collection1 = document.getElementsByClassName("ii gt");
             const collection2 = document.getElementsByClassName("comment-copy");
