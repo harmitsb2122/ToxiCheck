@@ -131,7 +131,81 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               });
           });
         }
+
+        // MAIN CODE STARTS FROMHERE
+
         function main() {
+          var panel = document.createElement("div");
+          panel.style.position = "fixed";
+          panel.style.borderRadius = "20px";
+          panel.style.right = "100px";
+          panel.style.bottom = "10px";
+          panel.style.backgroundColor = "white";
+          panel.style.zIndex = 1000;
+          panel.style.visibility = "hidden";
+          panel.style.width = "200px";
+          panel.style.height = "100px";
+          panel.style.padding = "10px";
+          panel.style.border = "1px solid black";
+
+          var panelText = document.createElement("div");
+          panelText.innerText = "dummy text"; // this would be the suggested phrase
+          panelText.style.marginBottom = "10px";
+          panel.appendChild(panelText);
+
+          var panelButton = document.createElement("button");
+          panelButton.innerText = "Close";
+          panelButton.style.backgroundColor = "red";
+          panelButton.style.color = "white";
+          panelButton.style.border = "none";
+          panelButton.style.padding = "5px";
+          panelButton.addEventListener("click", function () {
+            panel.style.visibility = "hidden";
+          });
+          panelButton.style.marginRight = "10px";
+          panelButton.style.bottom = "2px";
+          panel.appendChild(panelButton);
+
+          var panelButton1 = document.createElement("button");
+          panelButton1.innerText = "Replace";
+          panelButton1.style.backgroundColor = "red";
+          panelButton1.style.color = "white";
+          panelButton1.style.border = "none";
+          panelButton1.style.padding = "5px";
+          panelButton1.addEventListener("click", function () {
+            if (currentElement != null) {
+              currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
+              currentElement.style.textDecoration = "none";
+            }
+          });
+          panelButton1.style.bottom = "2px";
+          panel.appendChild(panelButton1);
+
+          var mainButton = document.createElement("button");
+          mainButton.style.position = "fixed";
+          mainButton.style.borderRadius = "20px";
+          mainButton.style.right = "10px";
+          mainButton.style.bottom = "10px";
+          mainButton.style.backgroundColor = "blue";
+          mainButton.style.color = "white";
+          mainButton.style.border = "none";
+          mainButton.style.padding = "8px";
+          mainButton.style.zIndex = 1000;
+          mainButton.innerText = "Suggest";
+          mainButton.style.visibility = "hidden";
+          mainButton.style.border = "1px solid yellow";
+          mainButton.addEventListener("click", function () {
+            if (panel.style.visibility == "hidden") {
+              panel.style.visibility = "visible";
+            } else {
+              panel.style.visibility = "hidden";
+            }
+          });
+
+          document.body.appendChild(mainButton);
+          document.body.appendChild(panel);
+
+          var currentElement = null;
           window.addEventListener("input", async function () {
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
@@ -156,13 +230,14 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
                 await getResult(data).then((ans) => {
                   if (ans != 6) {
+                    currentElement = elementlist[i];
                     elementlist[i].style.textDecoration = "underline red";
+                    mainButton.style.visibility = "visible";
+                    // open the dialog box here
                   } else {
+                    mainButton.style.visibility = "hidden";
                     elementlist[i].style.textDecoration = "none";
                   }
-                });
-                elementlist[i].addEventListener("click", function () {
-                  this.style.textDecoration = "none";
                 });
               }
             }
