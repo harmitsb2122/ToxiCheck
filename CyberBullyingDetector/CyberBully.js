@@ -138,52 +138,20 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           // Main Panel
           var mainPanel = document.createElement("div");
           mainPanel.style.position = "fixed";
+          mainPanel.style.fontSize = "15px";
           mainPanel.style.borderRadius = "20px";
           mainPanel.style.right = "100px";
           mainPanel.style.bottom = "10px";
           mainPanel.style.backgroundColor = "white";
           mainPanel.style.zIndex = 1000;
           mainPanel.style.visibility = "hidden";
-          mainPanel.style.width = "200px";
+          mainPanel.style.width = "300px";
+          mainPanel.style.width = "300px";
           mainPanel.style.height = "100px";
           mainPanel.style.padding = "10px";
           mainPanel.style.border = "1px solid black";
           mainPanel.style.overflow = "auto"; // make panel scrollable
           mainPanel.style.maxHeight = "2000px"; // set max height for panel
-          // var mainPanelText = document.createElement("div");
-          // mainPanelText.innerText = "dummy text"; // this would be the suggested phrase
-          // mainPanelText.style.marginBottom = "10px";
-          // mainPanel.appendChild(mainPanelText);
-
-          // var mainPanelButton = document.createElement("button");
-          // mainPanelButton.innerText = "Close";
-          // mainPanelButton.style.backgroundColor = "red";
-          // mainPanelButton.style.color = "white";
-          // mainPanelButton.style.border = "none";
-          // mainPanelButton.style.padding = "5px";
-          // mainPanelButton.addEventListener("click", function () {
-          //   mainPanel.style.visibility = "hidden";
-          // });
-          // mainPanelButton.style.marginRight = "10px";
-          // mainPanelButton.style.bottom = "2px";
-          // mainPanel.appendChild(mainPanelButton);
-
-          // var mainPanelButton1 = document.createElement("button");
-          // mainPanelButton1.innerText = "Replace";
-          // mainPanelButton1.style.backgroundColor = "red";
-          // mainPanelButton1.style.color = "white";
-          // mainPanelButton1.style.border = "none";
-          // mainPanelButton1.style.padding = "5px";
-          // mainPanelButton1.addEventListener("click", function () {
-          //   if (currentElement != null) {
-          //     currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
-          //     currentElement.style.textDecoration = "none";
-          //     mainButton.style.visibility = "hidden";
-          //     counterButton.style.visibility = "hidden";
-          //   }
-          // });
-          // mainPanelButton1.style.bottom = "2px";
-          // mainPanel.appendChild(mainPanelButton1);
 
           // main button
           var mainButton = document.createElement("button");
@@ -210,58 +178,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           document.body.appendChild(mainButton);
           document.body.appendChild(mainPanel);
 
-          // text panel (dynamic)
-
-          // var textPanel = document.createElement("div");
-          // textPanel.style.position = "fixed";
-          // textPanel.style.borderRadius = "20px";
-          // textPanel.style.right = "100px";
-          // textPanel.style.bottom = "10px";
-          // textPanel.style.backgroundColor = "white";
-          // textPanel.style.zIndex = 1000;
-          // textPanel.style.visibility = "hidden";
-          // textPanel.style.width = "200px";
-          // textPanel.style.height = "100px";
-          // textPanel.style.padding = "10px";
-          // textPanel.style.border = "1px solid black";
-
-          // var textPanelText = document.createElement("div");
-          // textPanelText.innerText = "dummy text"; // this would be the suggested phrase
-          // textPanelText.style.marginBottom = "10px";
-          // textPanel.appendChild(textPanelText);
-
-          // var textPanelButton = document.createElement("button");
-          // textPanelButton.innerText = "Close";
-          // textPanelButton.style.backgroundColor = "red";
-          // textPanelButton.style.color = "white";
-          // textPanelButton.style.border = "none";
-          // textPanelButton.style.padding = "5px";
-          // textPanelButton.addEventListener("click", function () {
-          //   textPanel.style.visibility = "hidden";
-          // });
-          // textPanelButton.style.marginRight = "10px";
-          // textPanelButton.style.bottom = "2px";
-          // textPanel.appendChild(textPanelButton);
-
-          // var textPanelButton1 = document.createElement("button");
-          // textPanelButton1.innerText = "Replace";
-          // textPanelButton1.style.backgroundColor = "red";
-          // textPanelButton1.style.color = "white";
-          // textPanelButton1.style.border = "none";
-          // textPanelButton1.style.padding = "5px";
-          // textPanelButton1.addEventListener("click", function () {
-          //   if (currentElement != null) {
-          //     currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
-          //     currentElement.style.textDecoration = "none";
-          //   }
-          // });
-          // textPanelButton1.style.bottom = "2px";
-          // textPanel.appendChild(textPanelButton1);
-
-          // document.body.appendChild(textPanel);
-
-          // counter button
-          // main button
+          // counter button --> pops up above the currently hovered element
           var counterButton = document.createElement("button");
           counterButton.style.position = "fixed";
           counterButton.style.borderRadius = "50%";
@@ -276,7 +193,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           counterButton.style.visibility = "hidden";
           counterButton.style.border = "1px solid yellow";
           counterButton.addEventListener("click", function () {
-            console.log("here");
             if (mainPanel.style.visibility == "hidden") {
               mainPanel.style.visibility = "visible";
             } else {
@@ -291,14 +207,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
             );
-            // const collection2 = document.getElementsByClassName(
-            //   "comment-body markdown-body js-preview-body"
-            // );
 
             const array1 = [...collection1];
-            // const array2 = [...collection2];
 
-            // const elementlist = array1.concat(array2);
             const elementlist = array1;
 
             var i = 0;
@@ -308,34 +219,39 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 var data = JSON.stringify({
                   data: [[elementlist[i].innerText]],
                 });
-
                 await getResult(data).then((ans) => {
                   if (ans != 6) {
+                    // automating panel text ...
                     var mainPanelText = document.createElement("div");
                     mainPanelText.innerText =
                       "Text : " + elementlist[i].innerText; // this would be the suggested phrase
                     mainPanelText.innerText +=
                       "\nSuggestion : " + elementlist[i].innerText; // this would be the suggested phrase
                     mainPanelText.style.marginBottom = "10px";
+                    mainPanelText.style.padding = "5px";
                     mainPanel.appendChild(mainPanelText);
 
+                    // panel buttons
                     var mainPanelButton = document.createElement("button");
                     mainPanelButton.innerText = "Close";
                     mainPanelButton.style.backgroundColor = "red";
                     mainPanelButton.style.color = "white";
+                    mainPanelButton.style.fontSize = "15px";
                     mainPanelButton.style.border = "none";
                     mainPanelButton.style.padding = "5px";
                     mainPanelButton.addEventListener("click", function () {
                       mainPanel.style.visibility = "hidden";
                     });
-                    mainPanelButton.style.marginRight = "10px";
+                    mainPanelButton.style.marginRight = "20px";
                     mainPanelButton.style.bottom = "2px";
+                    mainPanelButton.style.top = "2px";
                     mainPanel.appendChild(mainPanelButton);
 
                     var mainPanelButton1 = document.createElement("button");
                     mainPanelButton1.innerText = "Replace";
                     mainPanelButton1.style.backgroundColor = "red";
                     mainPanelButton1.style.color = "white";
+                    mainPanelButton1.style.fontSize = "15px";
                     mainPanelButton1.style.border = "none";
                     mainPanelButton1.style.padding = "5px";
                     mainPanelButton1.addEventListener("click", function () {
@@ -343,10 +259,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                         currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
                         currentElement.style.textDecoration = "none";
                         mainButton.style.visibility = "hidden";
+                        mainPanel.style.visibility = "hidden";
                         counterButton.style.visibility = "hidden";
                       }
                     });
-                    mainPanelButton1.style.bottom = "2px";
+                    mainPanelButton.style.bottom = "2px";
+                    mainPanelButton.style.top = "2px";
                     mainPanel.appendChild(mainPanelButton1);
 
                     currentElement = elementlist[i];
@@ -360,16 +278,14 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                       counterButton.style.top =
                         rect.top - counterButton.offsetHeight - 1 + "px";
                       counterButton.style.left = rect.left + "px";
-                      counterButton.style.visibility = "visible";
+                      if (
+                        currentElement.style.textDecoration === "underline red"
+                      )
+                        counterButton.style.visibility = "visible";
                       counterButton.style.width = "30px";
                       counterButton.style.height = "30px";
                       counterButton.style.padding = "0px";
                     });
-                    // elementlist[i].addEventListener("mouseout", function () {
-                    //   setTimeout(function () {
-                    //     counterButton.style.visibility = "hidden";
-                    //   }, 2000);
-                    // });
                   } else {
                     mainButton.style.visibility = "hidden";
                     counterButton.style.visibility = "hidden";
