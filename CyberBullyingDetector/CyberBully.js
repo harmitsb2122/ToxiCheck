@@ -132,78 +132,86 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
         }
 
-        // MAIN CODE STARTS FROMHERE
+        //****** MAIN CODE STARTS FROM HERE *****//
 
         function main() {
-          // Main Panel
-          var mainPanel = document.createElement("div");
-          mainPanel.style.position = "fixed";
-          mainPanel.style.fontSize = "15px";
-          mainPanel.style.borderRadius = "20px";
-          mainPanel.style.right = "100px";
-          mainPanel.style.bottom = "10px";
-          mainPanel.style.backgroundColor = "white";
-          mainPanel.style.zIndex = 1000;
-          mainPanel.style.visibility = "hidden";
-          mainPanel.style.width = "300px";
-          mainPanel.style.width = "300px";
-          mainPanel.style.height = "100px";
-          mainPanel.style.padding = "10px";
-          mainPanel.style.border = "1px solid black";
-          mainPanel.style.overflow = "auto"; // make panel scrollable
-          mainPanel.style.maxHeight = "2000px"; // set max height for panel
+          //* Suggestion Panel *//
+          var suggestPanel = document.createElement("div");
+          suggestPanel.style.position = "fixed";
+          suggestPanel.style.fontSize = "15px";
+          suggestPanel.style.borderRadius = "20px";
+          suggestPanel.style.right = "100px";
+          suggestPanel.style.bottom = "10px";
+          suggestPanel.style.backgroundColor = "white";
+          suggestPanel.style.zIndex = 1000;
+          suggestPanel.style.visibility = "hidden";
+          suggestPanel.style.width = "300px";
+          suggestPanel.style.width = "300px";
+          suggestPanel.style.height = "100px";
+          suggestPanel.style.padding = "10px";
+          suggestPanel.style.border = "1px solid black";
+          suggestPanel.style.overflow = "auto"; // make panel scrollable
+          suggestPanel.style.maxHeight = "2000px"; // set max height for panel
 
-          // main button
-          var mainButton = document.createElement("button");
-          mainButton.style.position = "fixed";
-          mainButton.style.borderRadius = "20px";
-          mainButton.style.right = "10px";
-          mainButton.style.bottom = "10px";
-          mainButton.style.backgroundColor = "blue";
-          mainButton.style.color = "white";
-          mainButton.style.border = "none";
-          mainButton.style.padding = "8px";
-          mainButton.style.zIndex = 1000;
-          mainButton.innerText = "Suggest";
-          mainButton.style.visibility = "hidden";
-          mainButton.style.border = "1px solid yellow";
-          mainButton.addEventListener("click", function () {
-            if (mainPanel.style.visibility == "hidden") {
-              mainPanel.style.visibility = "visible";
+          //* Suggest Button *//
+          var suggestButton = document.createElement("button");
+          suggestButton.style.position = "fixed";
+          suggestButton.style.borderRadius = "20px";
+          suggestButton.style.right = "10px";
+          suggestButton.style.bottom = "10px";
+          suggestButton.style.backgroundColor = "blue";
+          suggestButton.style.color = "white";
+          suggestButton.style.border = "none";
+          suggestButton.style.padding = "8px";
+          suggestButton.style.zIndex = 1000;
+          suggestButton.innerText = "Suggest";
+          suggestButton.style.visibility = "hidden";
+          suggestButton.style.border = "1px solid yellow";
+          suggestButton.addEventListener("click", function () {
+            if (suggestPanel.style.visibility == "hidden") {
+              suggestPanel.style.visibility = "visible";
             } else {
-              mainPanel.style.visibility = "hidden";
+              suggestPanel.style.visibility = "hidden";
             }
           });
 
-          document.body.appendChild(mainButton);
-          document.body.appendChild(mainPanel);
+          //* Hover Button *//
+          // pops up above the currently hovered element
+          var hoverButton = document.createElement("button");
+          hoverButton.style.position = "fixed";
+          hoverButton.style.borderRadius = "50%";
+          hoverButton.style.right = "10px";
+          hoverButton.style.bottom = "10px";
+          hoverButton.style.backgroundColor = "red";
+          hoverButton.style.color = "white";
+          hoverButton.style.border = "none";
+          hoverButton.style.padding = "8px";
+          hoverButton.style.zIndex = 1000;
+          hoverButton.innerText = "!!";
+          hoverButton.style.visibility = "hidden";
+          hoverButton.style.border = "1px solid yellow";
 
-          // counter button --> pops up above the currently hovered element
-          var counterButton = document.createElement("button");
-          counterButton.style.position = "fixed";
-          counterButton.style.borderRadius = "50%";
-          counterButton.style.right = "10px";
-          counterButton.style.bottom = "10px";
-          counterButton.style.backgroundColor = "red";
-          counterButton.style.color = "white";
-          counterButton.style.border = "none";
-          counterButton.style.padding = "8px";
-          counterButton.style.zIndex = 1000;
-          counterButton.innerText = "!!";
-          counterButton.style.visibility = "hidden";
-          counterButton.style.border = "1px solid yellow";
-          counterButton.addEventListener("click", function () {
-            if (mainPanel.style.visibility == "hidden") {
-              mainPanel.style.visibility = "visible";
+          // toggle suggest panel
+          hoverButton.addEventListener("click", function () {
+            if (suggestPanel.style.visibility == "hidden") {
+              suggestPanel.style.visibility = "visible";
             } else {
-              mainPanel.style.visibility = "hidden";
+              suggestPanel.style.visibility = "hidden";
             }
           });
 
-          document.body.appendChild(counterButton);
+          document.body.appendChild(suggestButton);
+          document.body.appendChild(suggestPanel);
+          document.body.appendChild(hoverButton);
 
           var currentElement = null;
+
           window.addEventListener("input", async function () {
+            // TODO : transport the hoverButton to the current element position
+            // TODO : Separate non-relevant text to words for now
+            // TODO : Modify the panel with the current suggestion on click (hoverButton)
+            // TODO LATER : Separate non-relevant text to words for phrases
+
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
             );
@@ -221,74 +229,75 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 });
                 await getResult(data).then((ans) => {
                   if (ans != 6) {
-                    // automating panel text ...
-                    var mainPanelText = document.createElement("div");
-                    mainPanelText.innerText =
+                    //* Panel text *//
+                    var suggestPanelText = document.createElement("div");
+                    suggestPanelText.innerText =
                       "Text : " + elementlist[i].innerText; // this would be the suggested phrase
-                    mainPanelText.innerText +=
+                    suggestPanelText.innerText +=
                       "\nSuggestion : " + elementlist[i].innerText; // this would be the suggested phrase
-                    mainPanelText.style.marginBottom = "10px";
-                    mainPanelText.style.padding = "5px";
-                    mainPanel.appendChild(mainPanelText);
+                    suggestPanelText.style.marginBottom = "10px";
+                    suggestPanelText.style.padding = "5px";
+                    suggestPanel.appendChild(suggestPanelText);
 
-                    // panel buttons
-                    var mainPanelButton = document.createElement("button");
-                    mainPanelButton.innerText = "Close";
-                    mainPanelButton.style.backgroundColor = "red";
-                    mainPanelButton.style.color = "white";
-                    mainPanelButton.style.fontSize = "15px";
-                    mainPanelButton.style.border = "none";
-                    mainPanelButton.style.padding = "5px";
-                    mainPanelButton.addEventListener("click", function () {
-                      mainPanel.style.visibility = "hidden";
+                    //* Panel Buttons *//
+                    var suggestPanelButton = document.createElement("button");
+                    suggestPanelButton.innerText = "Close";
+                    suggestPanelButton.style.backgroundColor = "red";
+                    suggestPanelButton.style.color = "white";
+                    suggestPanelButton.style.fontSize = "15px";
+                    suggestPanelButton.style.border = "none";
+                    suggestPanelButton.style.padding = "5px";
+                    suggestPanelButton.addEventListener("click", function () {
+                      suggestPanel.style.visibility = "hidden";
                     });
-                    mainPanelButton.style.marginRight = "20px";
-                    mainPanelButton.style.bottom = "2px";
-                    mainPanelButton.style.top = "2px";
-                    mainPanel.appendChild(mainPanelButton);
+                    suggestPanelButton.style.marginRight = "20px";
+                    suggestPanelButton.style.bottom = "2px";
+                    suggestPanelButton.style.top = "2px";
+                    suggestPanel.appendChild(suggestPanelButton);
 
-                    var mainPanelButton1 = document.createElement("button");
-                    mainPanelButton1.innerText = "Replace";
-                    mainPanelButton1.style.backgroundColor = "red";
-                    mainPanelButton1.style.color = "white";
-                    mainPanelButton1.style.fontSize = "15px";
-                    mainPanelButton1.style.border = "none";
-                    mainPanelButton1.style.padding = "5px";
-                    mainPanelButton1.addEventListener("click", function () {
+                    var suggestPanelButton1 = document.createElement("button");
+                    suggestPanelButton1.innerText = "Replace";
+                    suggestPanelButton1.style.backgroundColor = "red";
+                    suggestPanelButton1.style.color = "white";
+                    suggestPanelButton1.style.fontSize = "15px";
+                    suggestPanelButton1.style.border = "none";
+                    suggestPanelButton1.style.padding = "5px";
+                    suggestPanelButton1.addEventListener("click", function () {
                       if (currentElement != null) {
                         currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
                         currentElement.style.textDecoration = "none";
-                        mainButton.style.visibility = "hidden";
-                        mainPanel.style.visibility = "hidden";
-                        counterButton.style.visibility = "hidden";
+                        suggestButton.style.visibility = "hidden";
+                        suggestPanel.style.visibility = "hidden";
+                        hoverButton.style.visibility = "hidden";
                       }
                     });
-                    mainPanelButton.style.bottom = "2px";
-                    mainPanelButton.style.top = "2px";
-                    mainPanel.appendChild(mainPanelButton1);
+                    suggestPanelButton.style.bottom = "2px";
+                    suggestPanelButton.style.top = "2px";
 
+                    suggestPanel.appendChild(suggestPanelButton1);
+
+                    // styling the element
                     currentElement = elementlist[i];
                     currentElement.style.textDecoration = "underline red";
-                    mainButton.style.visibility = "visible";
-                    // open the dialog box here
-                    mainButton.style.visibility = "visible";
+                    suggestButton.style.visibility = "visible";
+
                     // open the dialog box here
                     currentElement.addEventListener("mouseenter", function () {
                       var rect = currentElement.getBoundingClientRect();
-                      counterButton.style.top =
-                        rect.top - counterButton.offsetHeight - 1 + "px";
-                      counterButton.style.left = rect.left + "px";
+                      hoverButton.style.top =
+                        rect.top - hoverButton.offsetHeight - 1 + "px";
+                      hoverButton.style.left = rect.left + "px";
                       if (
                         currentElement.style.textDecoration === "underline red"
                       )
-                        counterButton.style.visibility = "visible";
-                      counterButton.style.width = "30px";
-                      counterButton.style.height = "30px";
-                      counterButton.style.padding = "0px";
+                        hoverButton.style.visibility = "visible";
+                      hoverButton.style.width = "30px";
+                      hoverButton.style.height = "30px";
+                      hoverButton.style.padding = "0px";
                     });
                   } else {
-                    mainButton.style.visibility = "hidden";
-                    counterButton.style.visibility = "hidden";
+                    suggestButton.style.visibility = "hidden";
+                    hoverButton.style.visibility = "hidden";
                     elementlist[i].style.textDecoration = "none";
                   }
                 });
@@ -297,6 +306,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
 
           window.addEventListener("mouseover", async function () {
+            // TODO : clean the code here
+
             const collection1 = document.getElementsByClassName("ii gt");
             const collection2 = document.getElementsByClassName("comment-copy");
             const collection3 = document.getElementsByClassName(
