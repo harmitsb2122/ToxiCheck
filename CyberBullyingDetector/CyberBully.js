@@ -207,8 +207,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           var currentElement = null;
 
           window.addEventListener("input", async function () {
-            // TODO : transport the hoverButton to the current element position
-            // TODO : Separate non-relevant text to words for now
+            // TODO MODIFIED AND DONE: transport the hoverButton to the current element position --> changed the role to highlight words
+            // TODO DONE: Separate non-relevant text to words for now --> (changed 'bad' to 'good')
+
+            // TODO INCOMING : Intensity based coloring scheme
             // TODO : Modify the panel with the current suggestion on click (hoverButton)
             // TODO LATER : Separate non-relevant text to words for phrases
 
@@ -222,13 +224,27 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
             var i = 0;
             for (i = 0; i < elementlist.length; i++) {
-              console.log(elementlist[i].innerText);
               if (elementlist[i].innerText.length > 0) {
                 var data = JSON.stringify({
                   data: [[elementlist[i].innerText]],
                 });
+
+                currentElement = elementlist[i];
                 await getResult(data).then((ans) => {
                   if (ans != 6) {
+                    hoverButton.addEventListener("click", function () {
+                      if (
+                        currentElement != null &&
+                        currentElement.innerText.includes("bad")
+                      ) {
+                        let text = currentElement.innerText;
+                        let newText = text.replaceAll(
+                          "bad",
+                          "<span style='text-decoration: underline blue;'>bad</span>"
+                        );
+                        currentElement.innerHTML = newText;
+                      }
+                    });
                     //* Panel text *//
                     var suggestPanelText = document.createElement("div");
                     suggestPanelText.innerText =
@@ -263,8 +279,16 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     suggestPanelButton1.style.border = "none";
                     suggestPanelButton1.style.padding = "5px";
                     suggestPanelButton1.addEventListener("click", function () {
+                      // Replace all instances of "bad" with "good"
                       if (currentElement != null) {
-                        currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
+                        if (currentElement.innerText.includes("bad")) {
+                          let text = currentElement.innerText;
+                          let newText = text.replaceAll("bad", "good");
+                          currentElement.innerText = newText;
+                        }
+
+                        currentElement.innerHTML = newInnerHTML;
+                        // currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
                         currentElement.style.textDecoration = "none";
                         suggestButton.style.visibility = "hidden";
                         suggestPanel.style.visibility = "hidden";
@@ -277,7 +301,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     suggestPanel.appendChild(suggestPanelButton1);
 
                     // styling the element
-                    currentElement = elementlist[i];
                     currentElement.style.textDecoration = "underline red";
                     suggestButton.style.visibility = "visible";
 
