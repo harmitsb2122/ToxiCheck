@@ -215,6 +215,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
+          //* highlight Button *//
+          var highlightButton = document.createElement("button");
+          highlightButton.style.position = "fixed";
+          highlightButton.style.borderRadius = "20px";
+          highlightButton.style.right = "15px";
+          highlightButton.style.bottom = "50px";
+          highlightButton.style.backgroundColor = "green";
+          highlightButton.style.color = "white";
+          highlightButton.style.border = "none";
+          highlightButton.style.padding = "8px";
+          highlightButton.style.zIndex = 1000;
+          highlightButton.innerText = "Search";
+          highlightButton.style.visibility = "hidden";
+          highlightButton.style.border = "1px solid blue";
+
           //* Hover Button *//
           // pops up above the currently hovered element
           var hoverButton = document.createElement("button");
@@ -241,10 +256,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
 
           document.body.appendChild(suggestButton);
+          document.body.appendChild(highlightButton);
           document.body.appendChild(suggestPanel);
           document.body.appendChild(hoverButton);
 
           var currentElement = null;
+          const target_sentences = new Set();
 
           window.addEventListener("input", async function () {
             // TODO OPTIONAL: Modify the panel with the current suggestion on click (hoverButton)
@@ -258,167 +275,158 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const array1 = [...collection1];
 
             const elementlist = array1;
-            this;
-            var i = 0;
-            for (i = 0; i < elementlist.length; i++) {
-              if (elementlist[i].innerText.length > 0) {
-                currentElement = elementlist[i];
 
-                // TODO LATER: Preprocessing
+            if (elementlist[0].innerText.length > 0) {
+              currentElement = elementlist[0];
 
-                text = elementlist[i].innerText;
+              // TODO LATER: Preprocessing
 
-                // TODO LATER: Context - based phrase tokenization
+              text = elementlist[0].innerText;
 
-                const regex = /(?<=\.|\?|\!)\s+/;
-                const sentences = text.split(regex);
-                const target_sentences = new Set();
-                console.log(sentences);
+              // TODO LATER: Context - based phrase tokenization
 
-                // TODO LATER: Context based paragaphs/ group of sentences
+              const regex = /(?<=\.|\?|\!)\s+/;
+              const sentences = text.split(regex);
 
-                for (let j = 0; j < sentences.length - 1; j++) {
-                  const currentSentence = sentences[j];
+              // TODO LATER: Context based paragaphs/ group of sentences
 
-                  var data = JSON.stringify({
-                    inputs: currentSentence,
-                  });
+              for (let j = 0; j < sentences.length - 1; j++) {
+                const currentSentence = sentences[j];
 
-                  await getResult(data).then((ans) => {
-                    // * Defining the score metric *//
-                    let toxic_score = 0.0;
-                    let obscene_score = 0.0;
-                    let insult_score = 0.0;
-                    let identity_hate_score = 0.0;
-                    let severley_toxic_score = 0.0;
-                    let threat_score = 0.0;
-                    let value = 0;
-                    for (let j = 0; j < 6; j++) {
-                      if (ans[j].label === "toxic") toxic_score += ans[j].score;
-                      if (ans[j].label === "obscene")
-                        obscene_score += ans[j].score;
-                      if (ans[j].label === "insult")
-                        insult_score += ans[j].score;
-                      if (ans[j].label === "identity_hate")
-                        identity_hate_score += ans[j].score;
-                      if (ans[j].label === "severe_toxic")
-                        severley_toxic_score += ans[j].score;
-                      if (ans[j].label === "threat")
-                        threat_score += ans[j].score;
-                      if (ans[j].score > 0.5) value += 1;
-                    }
+                var data = JSON.stringify({
+                  inputs: currentSentence,
+                });
 
-                    console.log(value);
+                await getResult(data).then((ans) => {
+                  // * Defining the score metric *//
+                  let toxic_score = 0.0;
+                  let obscene_score = 0.0;
+                  let insult_score = 0.0;
+                  let identity_hate_score = 0.0;
+                  let severley_toxic_score = 0.0;
+                  let threat_score = 0.0;
+                  let value = 0;
+                  for (let j = 0; j < 6; j++) {
+                    if (ans[j].label === "toxic") toxic_score += ans[j].score;
+                    if (ans[j].label === "obscene")
+                      obscene_score += ans[j].score;
+                    if (ans[j].label === "insult") insult_score += ans[j].score;
+                    if (ans[j].label === "identity_hate")
+                      identity_hate_score += ans[j].score;
+                    if (ans[j].label === "severe_toxic")
+                      severley_toxic_score += ans[j].score;
+                    if (ans[j].label === "threat") threat_score += ans[j].score;
+                    if (ans[j].score > 0.5) value += 1;
+                  }
 
-                    if (value != 0) {
-                      target_sentences.add(currentSentence);
-                    }
-                  });
-                }
-
-                hoverButton.style.visibility = "hidden";
-                if (target_sentences.size != 0) {
-                  suggestButton.style.visibility = "visible";
-                } else {
-                  suggestButton.style.visibility = "hidden";
-                  return;
-                }
-
-                //* Handling text to span conversion (recursive) *//
-                for (const sentence of target_sentences) {
-                  newtext = elementlist[i].innerText;
-
-                  suggestButton.addEventListener("click", function () {
-                    //* Handling recursive additions *//
-                    let spanRegex =
-                      /<span\s+style=['"]text-decoration:\s*underline\s+red;\s*['"]>(.*?)<\/span>/gi;
-                    let textWithoutExistingSpans =
-                      currentElement.innerHTML.replace(spanRegex, "$1");
-                    if (textWithoutExistingSpans.includes(sentence)) {
-                      newtext = textWithoutExistingSpans.replaceAll(
-                        sentence,
-                        `<span style='text-decoration: underline red;'>${sentence}</span>`
-                      );
-                      currentElement.innerHTML = newtext;
-                    }
-                  });
-                }
-
-                suggestPanel.innerHTML = "";
-                for (const sentence of target_sentences) {
-                  //* Panel text *//
-                  var suggestPanelText = document.createElement("div");
-                  suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
-
-                  var sentence_data = JSON.stringify({
-                    inputs: sentence,
-                  });
-                  let suggestion = "";
-                  await genResult(sentence_data).then((ans) => {
-                    console.log(ans);
-                    suggestion = ans.generated_text;
-                  });
-
-                  suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
-                  suggestPanelText.style.marginBottom = "10px";
-                  suggestPanelText.style.padding = "5px";
-                  suggestPanel.appendChild(suggestPanelText);
-
-                  //* Panel Buttons *//
-                  var suggestPanelButton = document.createElement("button");
-                  suggestPanelButton.innerText = "Close";
-                  suggestPanelButton.style.backgroundColor = "red";
-                  suggestPanelButton.style.color = "white";
-                  suggestPanelButton.style.fontSize = "15px";
-                  suggestPanelButton.style.border = "none";
-                  suggestPanelButton.style.padding = "5px";
-                  suggestPanelButton.addEventListener("click", function () {
-                    suggestPanel.style.visibility = "hidden";
-                  });
-                  suggestPanelButton.style.marginRight = "20px";
-                  suggestPanelButton.style.bottom = "2px";
-                  suggestPanelButton.style.top = "2px";
-                  suggestPanel.appendChild(suggestPanelButton);
-
-                  var suggestPanelButton1 = document.createElement("button");
-                  suggestPanelButton1.innerText = "Replace";
-                  suggestPanelButton1.style.backgroundColor = "red";
-                  suggestPanelButton1.style.color = "white";
-                  suggestPanelButton1.style.fontSize = "15px";
-                  suggestPanelButton1.style.border = "none";
-                  suggestPanelButton1.style.padding = "5px";
-                  suggestPanelButton1.style.bottom = "2px";
-                  suggestPanelButton1.style.top = "2px";
-
-                  let spanElements = document.querySelectorAll(
-                    "span[style='text-decoration: underline red;']"
-                  );
-                  window.addEventListener("mouseover", async function () {
-                    spanElements = document.querySelectorAll(
-                      "span[style='text-decoration: underline red;']"
-                    );
-                  });
-
-                  //* Handling span to text conversion (non-recursive) *//
-                  suggestPanelButton1.addEventListener("click", function () {
-                    if (currentElement != null) {
-                      if (
-                        currentElement.innerHTML.includes(
-                          `<span style="text-decoration: underline red;">${sentence}</span>`
-                        )
-                      ) {
-                        let text = currentElement.innerHTML;
-                        let newText = text.replaceAll(
-                          `<span style="text-decoration: underline red;">${sentence}</span>`,
-                          suggestion
-                        );
-                        currentElement.innerHTML = newText;
-                      }
-                    }
-                  });
-                  suggestPanel.appendChild(suggestPanelButton1);
-                }
+                  if (value != 0) {
+                    target_sentences.add(currentSentence);
+                  }
+                });
               }
+              console.log(target_sentences);
+
+              hoverButton.style.visibility = "hidden";
+              highlightButton.style.visibility = "hidden";
+              if (target_sentences.size != 0) {
+                suggestButton.style.visibility = "visible";
+                highlightButton.style.visibility = "visible";
+              } else {
+                suggestButton.style.visibility = "hidden";
+                highlightButton.style.visibility = "hidden";
+                return;
+              }
+            }
+          });
+
+          //* Handling text to span conversion (recursive) *//
+          highlightButton.addEventListener("click", function () {
+            const collection1 = document.getElementsByClassName(
+              "Am Al editable LW-avf tS-tW"
+            );
+
+            const array1 = [...collection1];
+
+            const elementlist = array1;
+
+            for (const sentence of target_sentences) {
+              newtext = elementlist[0].innerText;
+              //* Handling recursive additions *//
+              let spanRegex = new RegExp(sentence, "g");
+              newtext = newtext.replaceAll(
+                spanRegex,
+                `<span style='text-decoration: underline red;'>${sentence}</span>`
+              );
+              elementlist[0].innerHTML = newtext;
+              // }
+            }
+          });
+
+          suggestButton.addEventListener("click", async function () {
+            suggestPanel.innerHTML = "";
+            for (const sentence of target_sentences) {
+              //* Panel text *//
+              var suggestPanelText = document.createElement("div");
+              suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
+
+              var sentence_data = JSON.stringify({
+                inputs: sentence,
+              });
+              let suggestion = "";
+              await genResult(sentence_data).then((ans) => {
+                console.log(ans);
+                suggestion = ans.generated_text;
+              });
+
+              suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
+              suggestPanelText.style.marginBottom = "10px";
+              suggestPanelText.style.padding = "5px";
+              suggestPanel.appendChild(suggestPanelText);
+
+              //* Panel Buttons *//
+              var suggestPanelButton = document.createElement("button");
+              suggestPanelButton.innerText = "Close";
+              suggestPanelButton.style.backgroundColor = "red";
+              suggestPanelButton.style.color = "white";
+              suggestPanelButton.style.fontSize = "15px";
+              suggestPanelButton.style.border = "none";
+              suggestPanelButton.style.padding = "5px";
+              suggestPanelButton.addEventListener("click", function () {
+                suggestPanel.style.visibility = "hidden";
+              });
+              suggestPanelButton.style.marginRight = "20px";
+              suggestPanelButton.style.bottom = "2px";
+              suggestPanelButton.style.top = "2px";
+              suggestPanel.appendChild(suggestPanelButton);
+
+              var suggestPanelButton1 = document.createElement("button");
+              suggestPanelButton1.innerText = "Replace";
+              suggestPanelButton1.style.backgroundColor = "red";
+              suggestPanelButton1.style.color = "white";
+              suggestPanelButton1.style.fontSize = "15px";
+              suggestPanelButton1.style.border = "none";
+              suggestPanelButton1.style.padding = "5px";
+              suggestPanelButton1.style.bottom = "2px";
+              suggestPanelButton1.style.top = "2px";
+
+              //* Handling span to text conversion (non-recursive) *//
+              suggestPanelButton1.addEventListener("click", function () {
+                if (currentElement != null) {
+                  if (
+                    currentElement.innerHTML.includes(
+                      `<span style="text-decoration: underline red;">${sentence}</span>`
+                    )
+                  ) {
+                    let text = currentElement.innerHTML;
+                    let newText = text.replaceAll(
+                      `<span style="text-decoration: underline red;">${sentence}</span>`,
+                      suggestion
+                    );
+                    currentElement.innerHTML = newText;
+                  }
+                }
+              });
+              suggestPanel.appendChild(suggestPanelButton1);
             }
           });
 
