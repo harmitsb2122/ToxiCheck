@@ -247,12 +247,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           var currentElement = null;
 
           window.addEventListener("input", async function () {
-            // TODO MODIFIED AND DONE: transport the hoverButton to the current element position --> changed the role to highlight words
-            // TODO DONE: Separate non-relevant text to words for now --> (changed 'bad' to 'good')
-
-            // TODO INCOMING : Intensity based coloring scheme
-            // TODO : Modify the panel with the current suggestion on click (hoverButton)
-            // TODO LATER : Separate non-relevant text to words for phrases
+            // TODO OPTIONAL: Modify the panel with the current suggestion on click (hoverButton)
+            // TODO OPTIONAL : Intensity based coloring scheme
+            // TODO OPTIONAL: Separate non-relevant text to words for phrases
 
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
@@ -267,18 +264,18 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               if (elementlist[i].innerText.length > 0) {
                 currentElement = elementlist[i];
 
-                // TODO : Preprocessing
+                // TODO LATER: Preprocessing
 
                 text = elementlist[i].innerText;
 
-                // TODO : Context - based phrase tokenization
+                // TODO LATER: Context - based phrase tokenization
 
                 const regex = /(?<=\.|\?|\!)\s+/;
                 const sentences = text.split(regex);
                 const target_sentences = new Set();
                 console.log(sentences);
 
-                // TODO : Context based paragaphs/ group of sentences
+                // TODO LATER: Context based paragaphs/ group of sentences
 
                 for (let j = 0; j < sentences.length - 1; j++) {
                   const currentSentence = sentences[j];
@@ -327,22 +324,16 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   return;
                 }
 
+                //* Handling text to span conversion (recursive) *//
                 for (const sentence of target_sentences) {
                   newtext = elementlist[i].innerText;
 
                   suggestButton.addEventListener("click", function () {
-                    // if (
-                    //   currentElement != null &&
-                    //   currentElement.innerText.includes(sentence)
-                    // ) {
-                    //   newtext = newtext.replaceAll(
-                    //     sentence,
-                    //     `<span style='text-decoration: underline red;'>${sentence}</span>`
-                    //   );
-
-                    //   currentElement.innerHTML = newtext;
-                    let spanRegex = /<span\s+style=['"]text-decoration:\s*underline\s+red;\s*['"]>(.*?)<\/span>/gi;
-                    let textWithoutExistingSpans = currentElement.innerHTML.replace(spanRegex, '$1');
+                    //* Handling recursive additions *//
+                    let spanRegex =
+                      /<span\s+style=['"]text-decoration:\s*underline\s+red;\s*['"]>(.*?)<\/span>/gi;
+                    let textWithoutExistingSpans =
+                      currentElement.innerHTML.replace(spanRegex, "$1");
                     if (textWithoutExistingSpans.includes(sentence)) {
                       newtext = textWithoutExistingSpans.replaceAll(
                         sentence,
@@ -365,7 +356,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   let suggestion = "";
                   await genResult(sentence_data).then((ans) => {
                     console.log(ans);
-                    suggestion = ans.generated_text + ".";
+                    suggestion = ans.generated_text;
                   });
 
                   suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
@@ -408,18 +399,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     );
                   });
 
+                  //* Handling span to text conversion (non-recursive) *//
                   suggestPanelButton1.addEventListener("click", function () {
-                    // console.log(spanElements);
-                    // spanElements.forEach((spanElement) => {
-                    //   if (spanElement != null) {
-                    //     if (spanElement.innerText.includes(sentence)) {
-                    //       let text = spanElement.innerText;
-                    //       let newText = text.replaceAll(sentence, suggestion);
-                    //       spanElement.innerText = newText;
-                    //       spanElement.replaceWith(spanElement.innerText);
-                    //     }
-                    //   }
-                    // });
                     if (currentElement != null) {
                       if (
                         currentElement.innerHTML.includes(
@@ -461,6 +442,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             });
 
             // TODO : clean the code here
+            // TODO MUST : Complete code to unblur specific lines based on toxicity
+            // TODO MUST : Complete code to add replace button to replace all the content with generated ones (use the same logic no panel is required)
 
             const collection1 = document.getElementsByClassName("ii gt");
             const collection2 = document.getElementsByClassName("comment-copy");
