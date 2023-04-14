@@ -264,10 +264,11 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           const target_sentences = new Set();
 
           window.addEventListener("input", async function () {
+            // TODO MUST : API multiple request (429 error) resolutuion with same text
             // TODO OPTIONAL: Modify the panel with the current suggestion on click (hoverButton)
             // TODO OPTIONAL : Intensity based coloring scheme
             // TODO OPTIONAL: Separate non-relevant text to words for phrases
-
+            suggestPanel.innerHTML = "";
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
             );
@@ -358,7 +359,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 `<span style='text-decoration: underline red;'>${sentence}</span>`
               );
               elementlist[0].innerHTML = newtext;
-              // }
             }
           });
 
@@ -423,6 +423,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                       suggestion
                     );
                     currentElement.innerHTML = newText;
+                    target_sentences.delete(sentence);
                   }
                 }
               });
