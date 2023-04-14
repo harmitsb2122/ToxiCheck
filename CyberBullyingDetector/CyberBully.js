@@ -106,21 +106,61 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   {
     "sotagger.js": [
       function (require, module, exports) {
-        var array = [];
-
+        // * Segregating toxic/abusive words *//
         async function getResult(send_data) {
+          console.log(send_data);
           const options = {
             method: "POST",
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
           return new Promise((resolve, reject) => {
-            fetch("http://127.0.0.1:8000/predict", options)
-              .then((response) => response.json())
+            fetch(
+              "https://api-inference.huggingface.co/models/unitary/toxic-bert",
+              options
+            )
+              .then((response) => {
+                return response.json();
+              })
               .then((data) => {
+                console.log("after getting the response " + data);
+                var ans = data[0];
+                resolve(ans);
+              })
+              .catch((error) => {
+                console.log("error", error);
+
+                reject(error);
+              });
+          });
+        }
+
+        // * Generating sentences *//
+        async function genResult(send_data) {
+          console.log(send_data);
+          const options = {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer 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",
+            },
+            body: send_data,
+          };
+          return new Promise((resolve, reject) => {
+            fetch(
+              "https://api-inference.huggingface.co/models/s-nlp/bart-base-detox",
+              options
+            )
+              .then((response) => {
+                return response.json();
+              })
+              .then((data) => {
+                console.log("after getting the response " + data);
                 var ans = data[0];
                 resolve(ans);
               })
@@ -180,7 +220,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           var hoverButton = document.createElement("button");
           hoverButton.style.position = "fixed";
           hoverButton.style.borderRadius = "50%";
-          hoverButton.style.right = "10px";
+          hoverButton.style.right = "400px";
           hoverButton.style.bottom = "10px";
           hoverButton.style.backgroundColor = "red";
           hoverButton.style.color = "white";
@@ -221,114 +261,205 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const array1 = [...collection1];
 
             const elementlist = array1;
-
+            this;
             var i = 0;
             for (i = 0; i < elementlist.length; i++) {
               if (elementlist[i].innerText.length > 0) {
-                var data = JSON.stringify({
-                  data: [[elementlist[i].innerText]],
-                });
-
                 currentElement = elementlist[i];
-                await getResult(data).then((ans) => {
-                  if (ans != 6) {
-                    hoverButton.addEventListener("click", function () {
+
+                // TODO : Preprocessing
+
+                text = elementlist[i].innerText;
+
+                // TODO : Context - based phrase tokenization
+
+                const regex = /(?<=\.|\?|\!)\s+/;
+                const sentences = text.split(regex);
+                const target_sentences = new Set();
+                console.log(sentences);
+
+                // TODO : Context based paragaphs/ group of sentences
+
+                for (let j = 0; j < sentences.length - 1; j++) {
+                  const currentSentence = sentences[j];
+
+                  var data = JSON.stringify({
+                    inputs: currentSentence,
+                  });
+
+                  await getResult(data).then((ans) => {
+                    // * Defining the score metric *//
+                    let toxic_score = 0.0;
+                    let obscene_score = 0.0;
+                    let insult_score = 0.0;
+                    let identity_hate_score = 0.0;
+                    let severley_toxic_score = 0.0;
+                    let threat_score = 0.0;
+                    let value = 0;
+                    for (let j = 0; j < 6; j++) {
+                      if (ans[j].label === "toxic") toxic_score += ans[j].score;
+                      if (ans[j].label === "obscene")
+                        obscene_score += ans[j].score;
+                      if (ans[j].label === "insult")
+                        insult_score += ans[j].score;
+                      if (ans[j].label === "identity_hate")
+                        identity_hate_score += ans[j].score;
+                      if (ans[j].label === "severe_toxic")
+                        severley_toxic_score += ans[j].score;
+                      if (ans[j].label === "threat")
+                        threat_score += ans[j].score;
+                      if (ans[j].score > 0.5) value += 1;
+                    }
+
+                    console.log(value);
+
+                    if (value != 0) {
+                      target_sentences.add(currentSentence);
+                    }
+                  });
+                }
+
+                hoverButton.style.visibility = "hidden";
+                if (target_sentences.size != 0) {
+                  suggestButton.style.visibility = "visible";
+                } else {
+                  suggestButton.style.visibility = "hidden";
+                  return;
+                }
+
+                for (const sentence of target_sentences) {
+                  newtext = elementlist[i].innerText;
+
+                  suggestButton.addEventListener("click", function () {
+                    // if (
+                    //   currentElement != null &&
+                    //   currentElement.innerText.includes(sentence)
+                    // ) {
+                    //   newtext = newtext.replaceAll(
+                    //     sentence,
+                    //     `<span style='text-decoration: underline red;'>${sentence}</span>`
+                    //   );
+
+                    //   currentElement.innerHTML = newtext;
+                    let spanRegex = /<span\s+style=['"]text-decoration:\s*underline\s+red;\s*['"]>(.*?)<\/span>/gi;
+                    let textWithoutExistingSpans = currentElement.innerHTML.replace(spanRegex, '$1');
+                    if (textWithoutExistingSpans.includes(sentence)) {
+                      newtext = textWithoutExistingSpans.replaceAll(
+                        sentence,
+                        `<span style='text-decoration: underline red;'>${sentence}</span>`
+                      );
+                      currentElement.innerHTML = newtext;
+                    }
+                  });
+                }
+
+                suggestPanel.innerHTML = "";
+                for (const sentence of target_sentences) {
+                  //* Panel text *//
+                  var suggestPanelText = document.createElement("div");
+                  suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
+
+                  var sentence_data = JSON.stringify({
+                    inputs: sentence,
+                  });
+                  let suggestion = "";
+                  await genResult(sentence_data).then((ans) => {
+                    console.log(ans);
+                    suggestion = ans.generated_text + ".";
+                  });
+
+                  suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
+                  suggestPanelText.style.marginBottom = "10px";
+                  suggestPanelText.style.padding = "5px";
+                  suggestPanel.appendChild(suggestPanelText);
+
+                  //* Panel Buttons *//
+                  var suggestPanelButton = document.createElement("button");
+                  suggestPanelButton.innerText = "Close";
+                  suggestPanelButton.style.backgroundColor = "red";
+                  suggestPanelButton.style.color = "white";
+                  suggestPanelButton.style.fontSize = "15px";
+                  suggestPanelButton.style.border = "none";
+                  suggestPanelButton.style.padding = "5px";
+                  suggestPanelButton.addEventListener("click", function () {
+                    suggestPanel.style.visibility = "hidden";
+                  });
+                  suggestPanelButton.style.marginRight = "20px";
+                  suggestPanelButton.style.bottom = "2px";
+                  suggestPanelButton.style.top = "2px";
+                  suggestPanel.appendChild(suggestPanelButton);
+
+                  var suggestPanelButton1 = document.createElement("button");
+                  suggestPanelButton1.innerText = "Replace";
+                  suggestPanelButton1.style.backgroundColor = "red";
+                  suggestPanelButton1.style.color = "white";
+                  suggestPanelButton1.style.fontSize = "15px";
+                  suggestPanelButton1.style.border = "none";
+                  suggestPanelButton1.style.padding = "5px";
+                  suggestPanelButton1.style.bottom = "2px";
+                  suggestPanelButton1.style.top = "2px";
+
+                  let spanElements = document.querySelectorAll(
+                    "span[style='text-decoration: underline red;']"
+                  );
+                  window.addEventListener("mouseover", async function () {
+                    spanElements = document.querySelectorAll(
+                      "span[style='text-decoration: underline red;']"
+                    );
+                  });
+
+                  suggestPanelButton1.addEventListener("click", function () {
+                    // console.log(spanElements);
+                    // spanElements.forEach((spanElement) => {
+                    //   if (spanElement != null) {
+                    //     if (spanElement.innerText.includes(sentence)) {
+                    //       let text = spanElement.innerText;
+                    //       let newText = text.replaceAll(sentence, suggestion);
+                    //       spanElement.innerText = newText;
+                    //       spanElement.replaceWith(spanElement.innerText);
+                    //     }
+                    //   }
+                    // });
+                    if (currentElement != null) {
                       if (
-                        currentElement != null &&
-                        currentElement.innerText.includes("bad")
+                        currentElement.innerHTML.includes(
+                          `<span style="text-decoration: underline red;">${sentence}</span>`
+                        )
                       ) {
-                        let text = currentElement.innerText;
+                        let text = currentElement.innerHTML;
                         let newText = text.replaceAll(
-                          "bad",
-                          "<span style='text-decoration: underline blue;'>bad</span>"
+                          `<span style="text-decoration: underline red;">${sentence}</span>`,
+                          suggestion
                         );
                         currentElement.innerHTML = newText;
                       }
-                    });
-                    //* Panel text *//
-                    var suggestPanelText = document.createElement("div");
-                    suggestPanelText.innerText =
-                      "Text : " + elementlist[i].innerText; // this would be the suggested phrase
-                    suggestPanelText.innerText +=
-                      "\nSuggestion : " + elementlist[i].innerText; // this would be the suggested phrase
-                    suggestPanelText.style.marginBottom = "10px";
-                    suggestPanelText.style.padding = "5px";
-                    suggestPanel.appendChild(suggestPanelText);
-
-                    //* Panel Buttons *//
-                    var suggestPanelButton = document.createElement("button");
-                    suggestPanelButton.innerText = "Close";
-                    suggestPanelButton.style.backgroundColor = "red";
-                    suggestPanelButton.style.color = "white";
-                    suggestPanelButton.style.fontSize = "15px";
-                    suggestPanelButton.style.border = "none";
-                    suggestPanelButton.style.padding = "5px";
-                    suggestPanelButton.addEventListener("click", function () {
-                      suggestPanel.style.visibility = "hidden";
-                    });
-                    suggestPanelButton.style.marginRight = "20px";
-                    suggestPanelButton.style.bottom = "2px";
-                    suggestPanelButton.style.top = "2px";
-                    suggestPanel.appendChild(suggestPanelButton);
-
-                    var suggestPanelButton1 = document.createElement("button");
-                    suggestPanelButton1.innerText = "Replace";
-                    suggestPanelButton1.style.backgroundColor = "red";
-                    suggestPanelButton1.style.color = "white";
-                    suggestPanelButton1.style.fontSize = "15px";
-                    suggestPanelButton1.style.border = "none";
-                    suggestPanelButton1.style.padding = "5px";
-                    suggestPanelButton1.addEventListener("click", function () {
-                      // Replace all instances of "bad" with "good"
-                      if (currentElement != null) {
-                        if (currentElement.innerText.includes("bad")) {
-                          let text = currentElement.innerText;
-                          let newText = text.replaceAll("bad", "good");
-                          currentElement.innerText = newText;
-                        }
-
-                        currentElement.innerHTML = newInnerHTML;
-                        // currentElement.innerText = "dummy text"; // to be replaced with suggested phrase
-                        currentElement.style.textDecoration = "none";
-                        suggestButton.style.visibility = "hidden";
-                        suggestPanel.style.visibility = "hidden";
-                        hoverButton.style.visibility = "hidden";
-                      }
-                    });
-                    suggestPanelButton.style.bottom = "2px";
-                    suggestPanelButton.style.top = "2px";
-
-                    suggestPanel.appendChild(suggestPanelButton1);
-
-                    // styling the element
-                    currentElement.style.textDecoration = "underline red";
-                    suggestButton.style.visibility = "visible";
-
-                    // open the dialog box here
-                    currentElement.addEventListener("mouseenter", function () {
-                      var rect = currentElement.getBoundingClientRect();
-                      hoverButton.style.top =
-                        rect.top - hoverButton.offsetHeight - 1 + "px";
-                      hoverButton.style.left = rect.left + "px";
-                      if (
-                        currentElement.style.textDecoration === "underline red"
-                      )
-                        hoverButton.style.visibility = "visible";
-                      hoverButton.style.width = "30px";
-                      hoverButton.style.height = "30px";
-                      hoverButton.style.padding = "0px";
-                    });
-                  } else {
-                    suggestButton.style.visibility = "hidden";
-                    hoverButton.style.visibility = "hidden";
-                    elementlist[i].style.textDecoration = "none";
-                  }
-                });
+                    }
+                  });
+                  suggestPanel.appendChild(suggestPanelButton1);
+                }
               }
             }
           });
 
           window.addEventListener("mouseover", async function () {
+            //* Dynamic Hover *//
+            const spanElements = document.querySelectorAll(
+              "span[style='text-decoration: underline red;']"
+            );
+
+            spanElements.forEach((spanElement) => {
+              spanElement.addEventListener("mouseenter", function () {
+                var rect = spanElement.getBoundingClientRect();
+                hoverButton.style.top =
+                  rect.top - hoverButton.offsetHeight - 1 + "px";
+                hoverButton.style.left = rect.left + "px";
+                hoverButton.style.visibility = "visible";
+                hoverButton.style.width = "30px";
+                hoverButton.style.height = "30px";
+                hoverButton.style.padding = "0px";
+              });
+            });
+
             // TODO : clean the code here
 
             const collection1 = document.getElementsByClassName("ii gt");
@@ -359,19 +490,19 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             for (i = 0; i < elementlist.length; i++) {
               if (elementlist[i].innerText.length > 0) {
                 var data = JSON.stringify({
-                  data: [[elementlist[i].innerText]],
+                  input: elementlist[i].innerText,
                 });
 
-                await getResult(data).then((ans) => {
-                  if (ans != 6) {
-                    elementlist[i].style.filter = "blur(3px)";
-                  } else {
-                    elementlist[i].style.filter = "none";
-                  }
-                });
-                elementlist[i].addEventListener("click", function () {
-                  this.style.filter = "none";
-                });
+                // await getResult(data).then((ans) => {
+                //   if (ans != 6) {
+                //     elementlist[i].style.filter = "blur(3px)";
+                //   } else {
+                //     elementlist[i].style.filter = "none";
+                //   }
+                // });
+                // elementlist[i].addEventListener("click", function () {
+                //   this.style.filter = "none";
+                // });
               }
             }
           });
