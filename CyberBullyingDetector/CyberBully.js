@@ -114,7 +114,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -127,7 +127,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 return response.json();
               })
               .then((data) => {
-                console.log("after getting the response " + data);
                 var ans = data[0];
                 resolve(ans);
               })
@@ -147,7 +146,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -160,7 +159,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 return response.json();
               })
               .then((data) => {
-                console.log("after getting the response " + data);
                 var ans = data[0];
                 resolve(ans);
               })
@@ -306,8 +304,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   let identity_hate_score = 0.0;
                   let severley_toxic_score = 0.0;
                   let threat_score = 0.0;
+                  let score = 0.0;
                   let value = 0;
                   for (let j = 0; j < 6; j++) {
+                    if (!ans) {
+                      break;
+                    }
                     if (ans[j].label === "toxic") toxic_score += ans[j].score;
                     else if (ans[j].label === "obscene")
                       obscene_score += ans[j].score;
@@ -320,17 +322,17 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     else if (ans[j].label === "threat")
                       threat_score += ans[j].score;
 
-                    if (ans[j].score > 0.5) {
-                      value += 1;
-                    }
+                    score += ans[j].score;
+                    // if (ans[j].score > 0.5) {
+                    //   value += 1;
+                    // }
                   }
 
-                  if (value != 0) {
+                  if (score >= 1.5) {
                     target_sentences.add(currentSentence);
                   }
                 });
               }
-              console.log(target_sentences);
 
               hoverButton.style.visibility = "hidden";
               highlightButton.style.visibility = "hidden";
@@ -377,11 +379,11 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               });
               let suggestion = "";
               await genResult(sentence_data).then((ans) => {
-                console.log(ans);
-                suggestion = ans.generated_text;
+                if (ans) suggestion = ans.generated_text;
+                else suggestion = sentence;
               });
 
-              if (suggestion === sentence) {
+              if (suggestion === sentence || sentence == suggestion) {
                 suggestion = " ";
               }
 
@@ -389,7 +391,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
               if (suggestion === " ")
                 suggestPanelText.innerText +=
-                  "\nSuggestion : " + suggestion + "(Better to remove it)";
+                  "\nSuggestion : (Better to remove it)";
               // this would be the suggested phrase
               else suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
               suggestPanelText.style.marginBottom = "10px";
@@ -449,6 +451,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
+          // make dictionary with Boolean values for each sentence
+          var dict = {};
+
           window.addEventListener("mouseover", async function () {
             //* Dynamic Hover *//
             const spanElements = document.querySelectorAll(
@@ -499,8 +504,48 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             var i = 0;
             for (i = 0; i < elementlist.length; i++) {
               if (elementlist[i].innerText.length > 0) {
-                var data = JSON.stringify({
-                  input: elementlist[i].innerText,
+                // check if elementlist[i].innerText is a key in dict
+                if (elementlist[i].innerText in dict) {
+                  if (dict[elementlist[i].innerText] === true) {
+                    elementlist[i].style.filter = "blur(3px)";
+                  } else {
+                    elementlist[i].style.filter = "none";
+                  }
+                } else {
+                  // if not, add it to dict with value false
+                  var data = JSON.stringify({
+                    inputs: elementlist[i].innerText,
+                  });
+
+                  let score = 0.0;
+
+                  await getResult(data).then((ans) => {
+                    // * Defining the score metric *//
+                    for (let j = 0; j < 6; j++) {
+                      if (!ans) {
+                        break;
+                      }
+
+                      score += ans[j].score;
+                    }
+                    if (score >= 1.5) {
+                      dict[elementlist[i].innerText] = true;
+                      console.log("True condition");
+                    } else {
+                      dict[elementlist[i].innerText] = false;
+                      console.log("False condition");
+                    }
+
+                    if (dict[elementlist[i].innerText] === true) {
+                      elementlist[i].style.filter = "blur(3px)";
+                    } else {
+                      elementlist[i].style.filter = "none";
+                    }
+                  });
+                }
+
+                elementlist[i].addEventListener("click", function () {
+                  this.style.filter = "none";
                 });
 
                 // await getResult(data).then((ans) => {
@@ -509,9 +554,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 //   } else {
                 //     elementlist[i].style.filter = "none";
                 //   }
-                // });
-                // elementlist[i].addEventListener("click", function () {
-                //   this.style.filter = "none";
                 // });
               }
             }
