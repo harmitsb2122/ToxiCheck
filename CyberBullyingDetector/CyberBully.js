@@ -114,7 +114,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -422,6 +422,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                       `<span style="text-decoration: underline red;">${sentence}</span>`,
                       suggestion
                     );
+                    currentElement.innerHTML = newText;
+                    target_sentences.delete(sentence);
+                  } else if (currentElement.innerHTML.includes(sentence)) {
+                    console.log("Trying to replace without span.");
+                    let text = currentElement.innerHTML;
+                    let newText = text.replaceAll(sentence, suggestion);
                     currentElement.innerHTML = newText;
                     target_sentences.delete(sentence);
                   }
