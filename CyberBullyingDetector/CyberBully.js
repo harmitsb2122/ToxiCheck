@@ -309,15 +309,20 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   let value = 0;
                   for (let j = 0; j < 6; j++) {
                     if (ans[j].label === "toxic") toxic_score += ans[j].score;
-                    if (ans[j].label === "obscene")
+                    else if (ans[j].label === "obscene")
                       obscene_score += ans[j].score;
-                    if (ans[j].label === "insult") insult_score += ans[j].score;
-                    if (ans[j].label === "identity_hate")
+                    else if (ans[j].label === "insult")
+                      insult_score += ans[j].score;
+                    else if (ans[j].label === "identity_hate")
                       identity_hate_score += ans[j].score;
-                    if (ans[j].label === "severe_toxic")
+                    else if (ans[j].label === "severe_toxic")
                       severley_toxic_score += ans[j].score;
-                    if (ans[j].label === "threat") threat_score += ans[j].score;
-                    if (ans[j].score > 0.5) value += 1;
+                    else if (ans[j].label === "threat")
+                      threat_score += ans[j].score;
+
+                    if (ans[j].score > 0.5) {
+                      value += 1;
+                    }
                   }
 
                   if (value != 0) {
@@ -366,8 +371,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             suggestPanel.innerHTML = "";
             for (const sentence of target_sentences) {
               //* Panel text *//
-              var suggestPanelText = document.createElement("div");
-              suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
 
               var sentence_data = JSON.stringify({
                 inputs: sentence,
@@ -378,7 +381,17 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 suggestion = ans.generated_text;
               });
 
-              suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
+              if (suggestion === sentence) {
+                suggestion = " ";
+              }
+
+              var suggestPanelText = document.createElement("div");
+              suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
+              if (suggestion === " ")
+                suggestPanelText.innerText +=
+                  "\nSuggestion : " + suggestion + "(Better to remove it)";
+              // this would be the suggested phrase
+              else suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
               suggestPanelText.style.marginBottom = "10px";
               suggestPanelText.style.padding = "5px";
               suggestPanel.appendChild(suggestPanelText);
@@ -425,7 +438,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     currentElement.innerHTML = newText;
                     target_sentences.delete(sentence);
                   } else if (currentElement.innerHTML.includes(sentence)) {
-                    console.log("Trying to replace without span.");
                     let text = currentElement.innerHTML;
                     let newText = text.replaceAll(sentence, suggestion);
                     currentElement.innerHTML = newText;
