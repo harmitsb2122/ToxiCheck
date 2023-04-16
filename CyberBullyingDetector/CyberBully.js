@@ -576,14 +576,17 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 checkButton.style.height = "30px";
                 checkButton.style.padding = "0px";
               });
-
+              elementlist[0].addEventListener("mouseleave", () =>
+                setTimeout(() => {
+                  checkButton.style.visibility = "hidden";
+                }, 5000)
+              );
               elementlist[0].addEventListener("click", function () {
                 this.style.filter = "none";
               });
             }
           });
         }
-
         $(document).ready(function () {
           main();
         });
