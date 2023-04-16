@@ -253,10 +253,27 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
+          //* Check Button *//
+          // pops up above the currently hovered element
+          var checkButton = document.createElement("button");
+          checkButton.style.position = "fixed";
+          checkButton.style.borderRadius = "50%";
+          checkButton.style.right = "400px";
+          checkButton.style.bottom = "10px";
+          checkButton.style.backgroundColor = "blue";
+          checkButton.style.color = "white";
+          checkButton.style.border = "none";
+          checkButton.style.padding = "8px";
+          checkButton.style.zIndex = 1000;
+          checkButton.innerText = "C";
+          checkButton.style.visibility = "hidden";
+          checkButton.style.border = "1px solid yellow";
+
           document.body.appendChild(suggestButton);
           document.body.appendChild(highlightButton);
           document.body.appendChild(suggestPanel);
           document.body.appendChild(hoverButton);
+          document.body.appendChild(checkButton);
 
           var currentElement = null;
           const target_sentences = new Set();
@@ -502,6 +519,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const elementlist = elementlist4.concat(array6);
 
             var i = 0;
+            var currentElement = null;
             for (i = 0; i < elementlist.length; i++) {
               if (elementlist[i].innerText.length > 0) {
                 // check if elementlist[i].innerText is a key in dict
@@ -543,19 +561,25 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     }
                   });
                 }
-
-                elementlist[i].addEventListener("click", function () {
-                  this.style.filter = "none";
-                });
-
-                // await getResult(data).then((ans) => {
-                //   if (ans != 6) {
-                //     elementlist[i].style.filter = "blur(3px)";
-                //   } else {
-                //     elementlist[i].style.filter = "none";
-                //   }
-                // });
               }
+            }
+            if (elementlist[0] && elementlist[0].innerText.length > 0) {
+              currentElement = elementlist[0];
+              elementlist[0].addEventListener("mouseenter", function () {
+                console.log(currentElement.innerText);
+                var rect = currentElement.getBoundingClientRect();
+                checkButton.style.top =
+                  rect.top - checkButton.offsetHeight - 1 + "px";
+                checkButton.style.left = rect.left + "px";
+                checkButton.style.visibility = "visible";
+                checkButton.style.width = "30px";
+                checkButton.style.height = "30px";
+                checkButton.style.padding = "0px";
+              });
+
+              elementlist[0].addEventListener("click", function () {
+                this.style.filter = "none";
+              });
             }
           });
         }
