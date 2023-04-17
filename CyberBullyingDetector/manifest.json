@@ -7,7 +7,7 @@
   "author": "Anush Mangal",
   "action": {
     "default_popup": "index.html",
-    "default_title": "Latest Covid Report"
+    "default_title": "Cyberbullying Detector"
   },
   "web_accessible_resources": [
     {

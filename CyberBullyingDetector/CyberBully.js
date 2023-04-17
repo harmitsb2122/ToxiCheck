@@ -114,7 +114,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -146,7 +146,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -277,7 +277,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
           var currentElement = null;
           const target_sentences = new Set();
-
+          var currentState = 0;
           window.addEventListener("input", async function () {
             // TODO MUST : API multiple request (429 error) resolutuion with same text
             // TODO OPTIONAL: Modify the panel with the current suggestion on click (hoverButton)
@@ -292,7 +292,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
             const elementlist = array1;
 
-            if (elementlist[0].innerText.length > 0) {
+            if (
+              elementlist != null &&
+              elementlist[0] != null &&
+              elementlist[0].innerText.length > 0
+            ) {
+              currentState = 0; // state for gmail
               currentElement = elementlist[0];
 
               // TODO LATER: Preprocessing
@@ -314,6 +319,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 });
 
                 await getResult(data).then((ans) => {
+                  console.log(ans);
                   // * Defining the score metric *//
                   let toxic_score = 0.0;
                   let obscene_score = 0.0;
@@ -340,9 +346,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                       threat_score += ans[j].score;
 
                     score += ans[j].score;
-                    // if (ans[j].score > 0.5) {
-                    //   value += 1;
-                    // }
                   }
 
                   if (score >= 1.5) {
@@ -364,7 +367,77 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          //* Handling text to span conversion (recursive) *//
+          // * Github *//
+          window.addEventListener("input", async function () {
+            suggestPanel.innerHTML = "";
+            const element = document.getElementById("new_comment_field");
+
+            if (element != null) {
+              currentState = 1; // state for github
+              currentElement = element;
+
+              text = element.value;
+
+              const regex = /(?<=\.|\?|\!)\s+/;
+              const sentences = text.split(regex);
+
+              for (let j = 0; j < sentences.length - 1; j++) {
+                const currentSentence = sentences[j];
+
+                var data = JSON.stringify({
+                  inputs: currentSentence,
+                });
+
+                await getResult(data).then((ans) => {
+                  console.log(ans);
+                  // * Defining the score metric *//
+                  let toxic_score = 0.0;
+                  let obscene_score = 0.0;
+                  let insult_score = 0.0;
+                  let identity_hate_score = 0.0;
+                  let severley_toxic_score = 0.0;
+                  let threat_score = 0.0;
+                  let score = 0.0;
+                  let value = 0;
+                  for (let j = 0; j < 6; j++) {
+                    if (!ans) {
+                      break;
+                    }
+                    if (ans[j].label === "toxic") toxic_score += ans[j].score;
+                    else if (ans[j].label === "obscene")
+                      obscene_score += ans[j].score;
+                    else if (ans[j].label === "insult")
+                      insult_score += ans[j].score;
+                    else if (ans[j].label === "identity_hate")
+                      identity_hate_score += ans[j].score;
+                    else if (ans[j].label === "severe_toxic")
+                      severley_toxic_score += ans[j].score;
+                    else if (ans[j].label === "threat")
+                      threat_score += ans[j].score;
+
+                    score += ans[j].score;
+                  }
+
+                  if (score >= 1.5) {
+                    target_sentences.add(currentSentence);
+                  }
+                });
+              }
+
+              hoverButton.style.visibility = "hidden";
+              highlightButton.style.visibility = "hidden";
+              if (target_sentences.size != 0) {
+                suggestButton.style.visibility = "visible";
+                if (state != 0) highlightButton.style.visibility = "visible";
+              } else {
+                suggestButton.style.visibility = "hidden";
+                highlightButton.style.visibility = "hidden";
+                return;
+              }
+            }
+          });
+
+          //* Gmail *//
           highlightButton.addEventListener("click", function () {
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
@@ -374,6 +447,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
             const elementlist = array1;
 
+            if (currentState != 0) {
+              return;
+            }
+            //* Handling text to span conversion (recursive) *//
             for (const sentence of target_sentences) {
               newtext = elementlist[0].innerText;
               //* Handling recursive additions *//
@@ -386,7 +463,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
+          //* Gmail *//
           suggestButton.addEventListener("click", async function () {
+            if (currentState != 0) return;
             suggestPanel.innerHTML = "";
             for (const sentence of target_sentences) {
               //* Panel text *//
@@ -396,6 +475,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               });
               let suggestion = "";
               await genResult(sentence_data).then((ans) => {
+                console.log(ans);
                 if (ans) suggestion = ans.generated_text;
                 else suggestion = sentence;
               });
@@ -468,6 +548,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
+          // * Github * //
+          suggestButton.addEventListener("click", async function () {
+            if (currentState != 1) return;
+            suggestPanel.innerHTML = "";
+            for (const sentence of target_sentences) {
+              //* Panel text *//
+
+              var sentence_data = JSON.stringify({
+                inputs: sentence,
+              });
+              let suggestion = "";
+              await genResult(sentence_data).then((ans) => {
+                console.log(ans);
+                if (ans) suggestion = ans.generated_text;
+                else suggestion = sentence;
+              });
+
+              if (suggestion === sentence || sentence == suggestion) {
+                suggestion = " ";
+              }
+
+              var suggestPanelText = document.createElement("div");
+              suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
+              if (suggestion === " ")
+                suggestPanelText.innerText +=
+                  "\nSuggestion : (Better to remove it)";
+              // this would be the suggested phrase
+              else suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
+              suggestPanelText.style.marginBottom = "10px";
+              suggestPanelText.style.padding = "5px";
+              suggestPanel.appendChild(suggestPanelText);
+
+              //* Panel Buttons *//
+              var suggestPanelButton = document.createElement("button");
+              suggestPanelButton.innerText = "Close";
+              suggestPanelButton.style.backgroundColor = "red";
+              suggestPanelButton.style.color = "white";
+              suggestPanelButton.style.fontSize = "15px";
+              suggestPanelButton.style.border = "none";
+              suggestPanelButton.style.padding = "5px";
+              suggestPanelButton.addEventListener("click", function () {
+                suggestPanel.style.visibility = "hidden";
+              });
+              suggestPanelButton.style.marginRight = "20px";
+              suggestPanelButton.style.bottom = "2px";
+              suggestPanelButton.style.top = "2px";
+              suggestPanel.appendChild(suggestPanelButton);
+
+              var suggestPanelButton1 = document.createElement("button");
+              suggestPanelButton1.innerText = "Replace";
+              suggestPanelButton1.style.backgroundColor = "red";
+              suggestPanelButton1.style.color = "white";
+              suggestPanelButton1.style.fontSize = "15px";
+              suggestPanelButton1.style.border = "none";
+              suggestPanelButton1.style.padding = "5px";
+              suggestPanelButton1.style.bottom = "2px";
+              suggestPanelButton1.style.top = "2px";
+
+              //* Handling span to text conversion (non-recursive) *//
+              suggestPanelButton1.addEventListener("click", function () {
+                if (currentElement != null) {
+                  if (currentElement.value.includes(sentence)) {
+                    let text = currentElement.value;
+                    let newText = text.replaceAll(sentence, suggestion);
+                    currentElement.value = newText;
+                    target_sentences.delete(sentence);
+                  }
+                }
+              });
+              suggestPanel.appendChild(suggestPanelButton1);
+            }
+          });
+
           // make dictionary with Boolean values for each sentence
           var dict = {};
 
@@ -496,12 +649,14 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
             const collection1 = document.getElementsByClassName("ii gt");
             const collection2 = document.getElementsByClassName("comment-copy");
-            const collection3 = document.getElementsByClassName(
-              "d-block comment-body markdown-body  js-comment-body"
-            );
-            const collection4 = document.getElementsByClassName(
-              "comment-body markdown-body js-preview-body"
-            );
+            // const collection3 = document.getElementsByClassName(
+            //   "d-block comment-body markdown-body  js-comment-body"
+            // );
+            const collection3 = document.getElementsByClassName("comment-copy");
+            // const collection4 = document.getElementsByClassName(
+            //   "comment-body markdown-body js-preview-body"
+            // );
+            const collection4 = document.getElementsByClassName("comment-copy");
             const collection5 = document.getElementsByClassName("h3YV2d");
             const collection6 = document.getElementsByClassName("ras4vb");
 
@@ -566,7 +721,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             if (elementlist[0] && elementlist[0].innerText.length > 0) {
               currentElement = elementlist[0];
               elementlist[0].addEventListener("mouseenter", function () {
-                console.log(currentElement.innerText);
                 var rect = currentElement.getBoundingClientRect();
                 checkButton.style.top =
                   rect.top - checkButton.offsetHeight - 1 + "px";
@@ -583,6 +737,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               );
               elementlist[0].addEventListener("click", function () {
                 this.style.filter = "none";
+              });
+              checkButton.addEventListener("click", function () {
+                console.log(elementlist[0].innerText);
               });
             }
           });
