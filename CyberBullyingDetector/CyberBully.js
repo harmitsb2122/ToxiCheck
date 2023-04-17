@@ -177,7 +177,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           var suggestPanel = document.createElement("div");
           suggestPanel.style.position = "fixed";
           suggestPanel.style.fontSize = "15px";
-          suggestPanel.style.borderRadius = "20px";
+          suggestPanel.style.borderRadius = "15px";
           suggestPanel.style.right = "100px";
           suggestPanel.style.bottom = "10px";
           suggestPanel.style.backgroundColor = "white";
@@ -371,10 +371,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           window.addEventListener("input", async function () {
             suggestPanel.innerHTML = "";
             const element = document.getElementById("new_comment_field");
-
             if (element != null) {
               currentState = 1; // state for github
               currentElement = element;
+              suggestButton.style.backgroundColor = "white"; // setting up according to github dark theme
+              suggestButton.style.color = "black";
+              suggestButton.style.border = "1px solid blue";
 
               text = element.value;
 
@@ -425,10 +427,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               }
 
               hoverButton.style.visibility = "hidden";
+              suggestPanel.style.visibility = "hidden";
               highlightButton.style.visibility = "hidden";
               if (target_sentences.size != 0) {
                 suggestButton.style.visibility = "visible";
-                if (state != 0) highlightButton.style.visibility = "visible";
+                if (currentState == 0)
+                  highlightButton.style.visibility = "visible";
               } else {
                 suggestButton.style.visibility = "hidden";
                 highlightButton.style.visibility = "hidden";
@@ -552,6 +556,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           suggestButton.addEventListener("click", async function () {
             if (currentState != 1) return;
             suggestPanel.innerHTML = "";
+            suggestPanel.style.backgroundColor = "#161b22"; //syled as per github page
+            suggestPanel.style.border = "0.5px solid #7d8590";
+
             for (const sentence of target_sentences) {
               //* Panel text *//
 
