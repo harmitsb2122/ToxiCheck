@@ -680,21 +680,23 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const elementlist4 = elementlist3.concat(array5);
             const elementlist = elementlist4.concat(array6);
 
-            var i = 0;
             var currentElement = null;
-            for (i = 0; i < elementlist.length; i++) {
-              if (elementlist[i].innerText.length > 0) {
-                // check if elementlist[i].innerText is a key in dict
-                if (elementlist[i].innerText in dict) {
-                  if (dict[elementlist[i].innerText] === true) {
-                    elementlist[i].style.filter = "blur(3px)";
+
+            if (elementlist[0] && elementlist[0].innerText.length > 0) {
+              currentElement = elementlist[0];
+              elementlist[0].addEventListener("mouseenter", async function () {
+                // check if currentElement.innerText is a key in dict
+                if (currentElement.innerText in dict) {
+                  if (dict[currentElement.innerText] === true) {
+                    currentElement.style.filter = "blur(3px)";
                   } else {
-                    elementlist[i].style.filter = "none";
+                    currentElement.style.filter = "none";
                   }
                 } else {
                   // if not, add it to dict with value false
+                  console.log("here " + currentElement.innerText);
                   var data = JSON.stringify({
-                    inputs: elementlist[i].innerText,
+                    inputs: currentElement.innerText,
                   });
 
                   let score = 0.0;
@@ -709,25 +711,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                       score += ans[j].score;
                     }
                     if (score >= 1.5) {
-                      dict[elementlist[i].innerText] = true;
+                      dict[currentElement.innerText] = true;
                       console.log("True condition");
                     } else {
-                      dict[elementlist[i].innerText] = false;
+                      dict[currentElement.innerText] = false;
                       console.log("False condition");
                     }
 
-                    if (dict[elementlist[i].innerText] === true) {
-                      elementlist[i].style.filter = "blur(3px)";
+                    if (dict[currentElement.innerText] === true) {
+                      currentElement.style.filter = "blur(3px)";
                     } else {
-                      elementlist[i].style.filter = "none";
+                      currentElement.style.filter = "none";
                     }
                   });
                 }
-              }
-            }
-            if (elementlist[0] && elementlist[0].innerText.length > 0) {
-              currentElement = elementlist[0];
-              elementlist[0].addEventListener("mouseenter", function () {
+
                 var rect = currentElement.getBoundingClientRect();
                 checkButton.style.top =
                   rect.top - checkButton.offsetHeight - 1 + "px";
