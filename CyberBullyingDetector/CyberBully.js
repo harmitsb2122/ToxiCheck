@@ -751,7 +751,50 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
         }
+
+        async function scrapeWhole() {
+          const collection1 = document.getElementsByClassName("ii gt");
+          const collection2 = document.getElementsByClassName("comment-copy");
+          const collection3 = document.getElementsByClassName(
+            "d-block comment-body markdown-body  js-comment-body"
+          );
+          const collection4 = document.getElementsByClassName(
+            "d-block comment-body markdown-body  js-comment-body"
+          ); // replaced this since preview panel is hidden
+          const collection5 = document.getElementsByClassName("h3YV2d");
+          const collection6 = document.getElementsByClassName("ras4vb");
+
+          const array1 = [...collection1];
+          const array2 = [...collection2];
+          const array3 = [...collection3];
+          const array4 = [...collection4];
+          const array5 = [...collection5];
+          const array6 = [...collection6];
+
+          const elementlist1 = array1.concat(array2);
+          const elementlist2 = elementlist1.concat(array3);
+          const elementlist3 = elementlist2.concat(array4);
+          const elementlist4 = elementlist3.concat(array5);
+          const elementlist = elementlist4.concat(array6);
+          var i = 0;
+          var text = "";
+          for (i = 0; i < elementlist.length; i++) {
+            if (elementlist[i] && elementlist[i].innerText.length > 0) {
+              text += elementlist[i].innerText + "\n";
+            }
+          }
+          console.log(text);
+          var data = JSON.stringify({
+            inputs: text,
+          });
+
+          await getResult(data).then((ans) => {
+            console.log(ans);
+          });
+        }
+
         $(document).ready(function () {
+          scrapeWhole();
           main();
         });
       },
