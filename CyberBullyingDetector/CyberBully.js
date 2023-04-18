@@ -114,7 +114,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -146,7 +146,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -210,8 +210,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           chartdiv.style.maxHeight = "600px";
           chartdiv.style.maxWidth = "600px";
 
-
-      
           var chartdivbutton = document.createElement("button");
           chartdivbutton.style.position = "fixed";
           chartdivbutton.style.borderRadius = "20px";
@@ -223,7 +221,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           chartdivbutton.style.padding = "8px";
           chartdivbutton.style.zIndex = 1000;
           chartdivbutton.innerText = "Show Toxicity Scale";
-          chartdivbutton.style.visibility = "visible";
+          chartdivbutton.style.visibility = "hidden";
           chartdivbutton.style.border = "1px solid yellow";
           chartdivbutton.addEventListener("click", function () {
             if (chartdiv.style.visibility == "hidden") {
@@ -365,7 +363,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   console.log(ans);
                   // chartdiv.innerHTML = ans;
 
-
                   // * Defining the score metric *//
                   let toxic_score = 0.0;
                   let obscene_score = 0.0;
@@ -393,7 +390,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
                     score += ans[j].score;
                   }
-
 
                   if (score >= 1.5) {
                     target_sentences.add(currentSentence);
@@ -678,6 +674,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           // make dictionary with Boolean values for each sentence
           var dict = {};
 
+          var currentElement = null;
           window.addEventListener("mouseover", async function () {
             //* Dynamic Hover *//
             const spanElements = document.querySelectorAll(
@@ -727,11 +724,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const elementlist4 = elementlist3.concat(array5);
             const elementlist = elementlist4.concat(array6);
 
-            var currentElement = null;
-
             if (elementlist[0] && elementlist[0].innerText.length > 0) {
-              currentElement = elementlist[0];
               elementlist[0].addEventListener("mouseenter", async function () {
+                currentElement = elementlist[0];
                 // check if currentElement.innerText is a key in dict
                 if (currentElement.innerText in dict) {
                   if (dict[currentElement.innerText] === true) {
@@ -773,7 +768,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   });
                 }
 
-                var rect = currentElement.getBoundingClientRect();
+                var rect = elementlist[0].getBoundingClientRect();
                 checkButton.style.top =
                   rect.top - checkButton.offsetHeight - 1 + "px";
                 checkButton.style.left = rect.left + "px";
@@ -790,15 +785,81 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               elementlist[0].addEventListener("click", function () {
                 this.style.filter = "none";
               });
-              checkButton.addEventListener("click", function () {
-                console.log(elementlist[0].innerText);
-              });
             }
+          });
+
+          //outside to avoid any mouseover issues
+          checkButton.addEventListener("click", async function () {
+            let text = currentElement.innerText;
+            var data = JSON.stringify({
+              inputs: text,
+            });
+
+            await getResult(data).then((ans) => {
+              chartdivbutton.style.visibility = "visible";
+              let element = document.getElementById("chartid");
+              if (element == null) return;
+              var myChart = new Chart(element, {
+                type: "bar",
+                data: {
+                  labels: [
+                    ans[0].label,
+                    ans[1].label,
+                    ans[2].label,
+                    ans[3].label,
+                    ans[4].label,
+                    ans[5].label,
+                  ],
+                  datasets: [
+                    {
+                      label: "CyberBully Details",
+                      data: [
+                        ans[0].score,
+                        ans[1].score,
+                        ans[2].score,
+                        ans[3].score,
+                        ans[4].score,
+                        ans[5].score,
+                      ],
+                      backgroundColor: [
+                        "rgba(255, 99, 132, 0.2)",
+                        "rgba(54, 162, 235, 0.2)",
+                        "rgba(255, 206, 86, 0.2)",
+                        "rgba(75, 192, 192, 0.2)",
+                        "rgba(153, 102, 255, 0.2)",
+                        "rgba(255, 159, 64, 0.2)",
+                      ],
+
+                      borderColor: [
+                        "rgba(255,99,132,1)",
+                        "rgba(54, 162, 235, 1)",
+                        "rgba(255, 206, 86, 1)",
+                        "rgba(75, 192, 192, 1)",
+                        "rgba(153, 102, 255, 1)",
+                        "rgba(255, 159, 64, 1)",
+                      ],
+                      borderWidth: 1,
+                    },
+                  ],
+                },
+                options: {
+                  scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true,
+                        },
+                      },
+                    ],
+                  },
+                },
+              });
+            });
           });
         }
 
         async function scrapeWhole() {
-          const collection1 = document.getElementsByClassName("ii gt");
+          const collection1 = document.getElementsByClassName("comment-copy"); // replacing for gmail
           const collection2 = document.getElementsByClassName("comment-copy");
           const collection3 = document.getElementsByClassName(
             "d-block comment-body markdown-body  js-comment-body"
@@ -821,29 +882,47 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           const elementlist3 = elementlist2.concat(array4);
           const elementlist4 = elementlist3.concat(array5);
           const elementlist = elementlist4.concat(array6);
+
+          if (elementlist.length == 0) return;
           var i = 0;
           var text = "";
+
           for (i = 0; i < elementlist.length; i++) {
             if (elementlist[i] && elementlist[i].innerText.length > 0) {
               text += elementlist[i].innerText + "\n";
             }
           }
-          console.log(text);
+
           var data = JSON.stringify({
             inputs: text,
           });
 
           await getResult(data).then((ans) => {
-            console.log("ans");
-            console.log(ans);
-            var myChart = new Chart(document.getElementById("chartid"), {
+            chartdivbutton.style.visibility = "visible";
+            let element = document.getElementById("chartid");
+            if (element == null) return;
+            var myChart = new Chart(element, {
               type: "bar",
               data: {
-                labels: [ans[0].label , ans[1].label , ans[2].label , ans[3].label , ans[4].label , ans[5].label],
+                labels: [
+                  ans[0].label,
+                  ans[1].label,
+                  ans[2].label,
+                  ans[3].label,
+                  ans[4].label,
+                  ans[5].label,
+                ],
                 datasets: [
                   {
                     label: "CyberBully Details",
-                    data: [ans[0].score, ans[1].score,ans[2].score , ans[3].score, ans[4].score, ans[5].score],
+                    data: [
+                      ans[0].score,
+                      ans[1].score,
+                      ans[2].score,
+                      ans[3].score,
+                      ans[4].score,
+                      ans[5].score,
+                    ],
                     backgroundColor: [
                       "rgba(255, 99, 132, 0.2)",
                       "rgba(54, 162, 235, 0.2)",
@@ -877,8 +956,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 },
               },
             });
-
-
           });
         }
 
