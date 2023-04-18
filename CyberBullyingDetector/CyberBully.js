@@ -191,6 +191,48 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           suggestPanel.style.overflow = "auto"; // make panel scrollable
           suggestPanel.style.maxHeight = "2000px"; // set max height for panel
 
+          var chartdiv = document.createElement("canvas");
+          chartdiv.style.position = "fixed";
+          chartdiv.style.borderRadius = "20px";
+          chartdiv.style.right = "10px";
+          chartdiv.style.top = "30px";
+          chartdiv.style.height = "200px";
+          chartdiv.style.overflow = "scroll";
+          chartdiv.style.width = "200px";
+          chartdiv.id = "chartid";
+          chartdiv.style.backgroundColor = "white";
+          chartdiv.style.color = "black";
+          chartdiv.style.border = "none";
+          chartdiv.style.padding = "8px";
+          chartdiv.style.zIndex = 2000;
+          chartdiv.style.visibility = "hidden";
+          chartdiv.style.border = "1px solid white";
+          chartdiv.style.maxHeight = "600px";
+          chartdiv.style.maxWidth = "600px";
+
+
+      
+          var chartdivbutton = document.createElement("button");
+          chartdivbutton.style.position = "fixed";
+          chartdivbutton.style.borderRadius = "20px";
+          chartdivbutton.style.right = "10px";
+          chartdivbutton.style.top = "5px";
+          chartdivbutton.style.backgroundColor = "gray";
+          chartdivbutton.style.color = "white";
+          chartdivbutton.style.border = "none";
+          chartdivbutton.style.padding = "8px";
+          chartdivbutton.style.zIndex = 1000;
+          chartdivbutton.innerText = "Show Toxicity Scale";
+          chartdivbutton.style.visibility = "visible";
+          chartdivbutton.style.border = "1px solid yellow";
+          chartdivbutton.addEventListener("click", function () {
+            if (chartdiv.style.visibility == "hidden") {
+              chartdiv.style.visibility = "visible";
+            } else {
+              chartdiv.style.visibility = "hidden";
+            }
+          });
+
           //* Suggest Button *//
           var suggestButton = document.createElement("button");
           suggestButton.style.position = "fixed";
@@ -268,7 +310,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           checkButton.innerText = "C";
           checkButton.style.visibility = "hidden";
           checkButton.style.border = "1px solid yellow";
-
+          document.body.append(chartdivbutton);
+          document.body.appendChild(chartdiv);
           document.body.appendChild(suggestButton);
           document.body.appendChild(highlightButton);
           document.body.appendChild(suggestPanel);
@@ -320,6 +363,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
                 await getResult(data).then((ans) => {
                   console.log(ans);
+                  // chartdiv.innerHTML = ans;
+
+
                   // * Defining the score metric *//
                   let toxic_score = 0.0;
                   let obscene_score = 0.0;
@@ -347,6 +393,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
                     score += ans[j].score;
                   }
+
 
                   if (score >= 1.5) {
                     target_sentences.add(currentSentence);
@@ -787,7 +834,51 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
 
           await getResult(data).then((ans) => {
+            console.log("ans");
             console.log(ans);
+            var myChart = new Chart(document.getElementById("chartid"), {
+              type: "bar",
+              data: {
+                labels: [ans[0].label , ans[1].label , ans[2].label , ans[3].label , ans[4].label , ans[5].label],
+                datasets: [
+                  {
+                    label: "CyberBully Details",
+                    data: [ans[0].score, ans[1].score,ans[2].score , ans[3].score, ans[4].score, ans[5].score],
+                    backgroundColor: [
+                      "rgba(255, 99, 132, 0.2)",
+                      "rgba(54, 162, 235, 0.2)",
+                      "rgba(255, 206, 86, 0.2)",
+                      "rgba(75, 192, 192, 0.2)",
+                      "rgba(153, 102, 255, 0.2)",
+                      "rgba(255, 159, 64, 0.2)",
+                    ],
+
+                    borderColor: [
+                      "rgba(255,99,132,1)",
+                      "rgba(54, 162, 235, 1)",
+                      "rgba(255, 206, 86, 1)",
+                      "rgba(75, 192, 192, 1)",
+                      "rgba(153, 102, 255, 1)",
+                      "rgba(255, 159, 64, 1)",
+                    ],
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                scales: {
+                  yAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true,
+                      },
+                    },
+                  ],
+                },
+              },
+            });
+
+
           });
         }
 
