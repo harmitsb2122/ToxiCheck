@@ -196,9 +196,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           chartdiv.style.borderRadius = "20px";
           chartdiv.style.right = "10px";
           chartdiv.style.top = "30px";
-          chartdiv.style.height = "200px";
+          chartdiv.style.height = "300px";
           chartdiv.style.overflow = "scroll";
-          chartdiv.style.width = "200px";
+          chartdiv.style.width = "600px";
           chartdiv.id = "chartid";
           chartdiv.style.backgroundColor = "white";
           chartdiv.style.color = "black";
@@ -787,7 +787,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               });
             }
           });
-
+          let currentChart = null;
           //outside to avoid any mouseover issues
           checkButton.addEventListener("click", async function () {
             let text = currentElement.innerText;
@@ -798,8 +798,15 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             await getResult(data).then((ans) => {
               chartdivbutton.style.visibility = "visible";
               let element = document.getElementById("chartid");
-              if (element == null) return;
-              var myChart = new Chart(element, {
+              if (element == null) {
+                return;
+              }
+              if (currentChart) {
+                currentChart.destroy();
+                currentChart = null;
+              }
+
+              currentChart = new Chart(element, {
                 type: "bar",
                 data: {
                   labels: [
