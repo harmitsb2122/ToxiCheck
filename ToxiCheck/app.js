@@ -191,6 +191,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           suggestPanel.style.overflow = "auto"; // make panel scrollable
           suggestPanel.style.maxHeight = "2000px"; // set max height for panel
 
+          //* Chart Properties *//
           var chartdiv = document.createElement("canvas");
           chartdiv.style.position = "fixed";
           chartdiv.style.borderRadius = "20px";
@@ -316,18 +317,16 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           document.body.appendChild(hoverButton);
           document.body.appendChild(checkButton);
 
-          var currentElement = null;
-          const target_sentences = new Set();
-          var currentState = 0;
+          var currentElement = null; // refering to currently listened element
+          const target_sentences = new Set(); // using set to store target sentences
+          var currentState = 0; // state for managing flow in different sites
           window.addEventListener("input", async function () {
-            // TODO MUST : API multiple request (429 error) resolutuion with same text
-            // TODO OPTIONAL: Modify the panel with the current suggestion on click (hoverButton)
             // TODO OPTIONAL : Intensity based coloring scheme
             // TODO OPTIONAL: Separate non-relevant text to words for phrases
             suggestPanel.innerHTML = "";
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
-            );
+            ); // the collection of elements having input class
 
             const array1 = [...collection1];
 
@@ -347,11 +346,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
               // TODO LATER: Context - based phrase tokenization
 
-              const regex = /(?<=\.|\?|\!)\s+/;
+              const regex = /(?<=\.|\?|\!)\s+/; // regex pattern to tokenize the sentences
               const sentences = text.split(regex);
 
               // TODO LATER: Context based paragaphs/ group of sentences
 
+              // iterating over the sentences and appending target (toxic) sentences
               for (let j = 0; j < sentences.length - 1; j++) {
                 const currentSentence = sentences[j];
 
@@ -391,6 +391,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     score += ans[j].score;
                   }
 
+                  // hardcoded parameter for toxicity scale
                   if (score >= 1.5) {
                     target_sentences.add(currentSentence);
                   }
@@ -410,7 +411,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // * Github *//
+          // * Events for Github Comment field *//
           window.addEventListener("input", async function () {
             suggestPanel.innerHTML = "";
             const element = document.getElementById("new_comment_field");
@@ -484,7 +485,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          //* Gmail *//
+          // * Gmail highlight feature *//
           highlightButton.addEventListener("click", function () {
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
@@ -510,7 +511,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          //* Gmail *//
+          // * Gmail Suggest feature *//
           suggestButton.addEventListener("click", async function () {
             if (currentState != 0) return;
             suggestPanel.innerHTML = "";
@@ -595,7 +596,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // * Github * //
+          // * Events for suggest button for gmail *//
           suggestButton.addEventListener("click", async function () {
             if (currentState != 1) return;
             suggestPanel.innerHTML = "";
@@ -673,8 +674,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
           // make dictionary with Boolean values for each sentence
           var dict = {};
-
           var currentElement = null;
+
+          //* Mouseover features and handling dynamic updates *//
           window.addEventListener("mouseover", async function () {
             //* Dynamic Hover *//
             const spanElements = document.querySelectorAll(
@@ -759,6 +761,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   });
                 }
 
+                // get current position of element and assign it to checkButton based on position of currentElement
                 var rect = elementlist[0].getBoundingClientRect();
                 checkButton.style.top =
                   rect.top - checkButton.offsetHeight - 1 + "px";
@@ -786,6 +789,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               inputs: text,
             });
 
+            // populating chart with the response values (toxic-bert)
             await getResult(data).then((ans) => {
               chartdivbutton.style.visibility = "visible";
               let element = document.getElementById("chartid");
@@ -919,11 +923,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           }
 
+          // optimization to avoid 400 error , reducing network payload
           text = text.substring(0, Math.min(text.length, 1000));
           var data = JSON.stringify({
             inputs: text,
           });
 
+          // populatiing chart values
           await getResult(data).then((ans) => {
             chartdivbutton.style.visibility = "visible";
             let element = document.getElementById("chartid");
