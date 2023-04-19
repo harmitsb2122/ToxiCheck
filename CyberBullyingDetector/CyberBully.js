@@ -114,7 +114,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -146,7 +146,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer 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",
+              Authorization: "Bearer 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",
             },
             body: send_data,
           };
@@ -215,14 +215,14 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           chartdivbutton.style.borderRadius = "20px";
           chartdivbutton.style.right = "10px";
           chartdivbutton.style.top = "5px";
-          chartdivbutton.style.backgroundColor = "gray";
-          chartdivbutton.style.color = "white";
+          chartdivbutton.style.backgroundColor = "white";
+          chartdivbutton.style.color = "black";
           chartdivbutton.style.border = "none";
           chartdivbutton.style.padding = "8px";
           chartdivbutton.style.zIndex = 1000;
           chartdivbutton.innerText = "Show Toxicity Scale";
           chartdivbutton.style.visibility = "hidden";
-          chartdivbutton.style.border = "1px solid yellow";
+          chartdivbutton.style.border = "1px solid black";
           chartdivbutton.addEventListener("click", function () {
             if (chartdiv.style.visibility == "hidden") {
               chartdiv.style.visibility = "visible";
@@ -694,35 +694,24 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               });
             });
 
-            // TODO : clean the code here
-            // TODO MUST : Complete code to unblur specific lines based on toxicity
-            // TODO MUST : Complete code to add replace button to replace all the content with generated ones (use the same logic no panel is required)
-
-            const collection1 = document.getElementsByClassName("ii gt");
-            const collection2 = document.getElementsByClassName("comment-copy");
-            // const collection3 = document.getElementsByClassName(
-            //   "d-block comment-body markdown-body  js-comment-body"
-            // );
-            const collection3 = document.getElementsByClassName("comment-copy");
-            // const collection4 = document.getElementsByClassName(
-            //   "comment-body markdown-body js-preview-body"
-            // );
-            const collection4 = document.getElementsByClassName("comment-copy");
-            const collection5 = document.getElementsByClassName("h3YV2d");
-            const collection6 = document.getElementsByClassName("ras4vb");
+            const collection1 = document.getElementsByClassName("ii gt"); // gmail
+            // const collection2 = document.getElementsByClassName("comment-copy");
+            const collection2 = document.getElementsByClassName(
+              "comment-body markdown-body js-preview-body"
+            ); // github
+            const collection3 = document.getElementsByClassName("h3YV2d"); // play store comment section
+            const collection4 = document.getElementsByClassName("ras4vb"); // play store comment section
 
             const array1 = [...collection1];
             const array2 = [...collection2];
             const array3 = [...collection3];
             const array4 = [...collection4];
-            const array5 = [...collection5];
-            const array6 = [...collection6];
 
             const elementlist1 = array1.concat(array2);
             const elementlist2 = elementlist1.concat(array3);
-            const elementlist3 = elementlist2.concat(array4);
-            const elementlist4 = elementlist3.concat(array5);
-            const elementlist = elementlist4.concat(array6);
+            const elementlist = elementlist2.concat(array4);
+            // const elementlist4 = elementlist3.concat(array5);
+            // const elementlist = elementlist4.concat(array6);
 
             if (elementlist[0] && elementlist[0].innerText.length > 0) {
               elementlist[0].addEventListener("mouseenter", async function () {
@@ -737,8 +726,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 } else {
                   // if not, add it to dict with value false
                   console.log("here " + currentElement.innerText);
+                  let text = currentElement.innerText;
+                  text = text.substring(0, Math.min(text.length, 1000));
                   var data = JSON.stringify({
-                    inputs: currentElement.innerText,
+                    inputs: text,
                   });
 
                   let score = 0.0;
@@ -866,31 +857,59 @@ parcelRequire = (function (modules, cache, entry, globalName) {
         }
 
         async function scrapeWhole() {
-          const collection1 = document.getElementsByClassName("comment-copy"); // replacing for gmail
-          const collection2 = document.getElementsByClassName("comment-copy");
-          const collection3 = document.getElementsByClassName(
+          const collection1 = document.getElementsByClassName(
             "d-block comment-body markdown-body  js-comment-body"
-          );
-          const collection4 = document.getElementsByClassName(
-            "d-block comment-body markdown-body  js-comment-body"
-          ); // replaced this since preview panel is hidden
-          const collection5 = document.getElementsByClassName("h3YV2d");
-          const collection6 = document.getElementsByClassName("ras4vb");
+          ); // github
 
           const array1 = [...collection1];
-          const array2 = [...collection2];
-          const array3 = [...collection3];
-          const array4 = [...collection4];
-          const array5 = [...collection5];
-          const array6 = [...collection6];
 
-          const elementlist1 = array1.concat(array2);
-          const elementlist2 = elementlist1.concat(array3);
-          const elementlist3 = elementlist2.concat(array4);
-          const elementlist4 = elementlist3.concat(array5);
-          const elementlist = elementlist4.concat(array6);
+          const elementlist = array1;
 
           if (elementlist.length == 0) return;
+
+          var chartdiv = document.createElement("canvas");
+          chartdiv.style.position = "fixed";
+          chartdiv.style.borderRadius = "20px";
+          chartdiv.style.right = "10px";
+          chartdiv.style.top = "30px";
+          chartdiv.style.height = "300px";
+          chartdiv.style.overflow = "scroll";
+          chartdiv.style.width = "600px";
+          chartdiv.id = "chartid";
+          chartdiv.style.backgroundColor = "white";
+          chartdiv.style.color = "black";
+          chartdiv.style.border = "none";
+          chartdiv.style.padding = "8px";
+          chartdiv.style.zIndex = 2000;
+          chartdiv.style.visibility = "hidden";
+          chartdiv.style.border = "1px solid white";
+          chartdiv.style.maxHeight = "600px";
+          chartdiv.style.maxWidth = "600px";
+
+          var chartdivbutton = document.createElement("button");
+          chartdivbutton.style.position = "fixed";
+          chartdivbutton.style.borderRadius = "20px";
+          chartdivbutton.style.right = "10px";
+          chartdivbutton.style.top = "5px";
+          chartdivbutton.style.backgroundColor = "white";
+          chartdivbutton.style.color = "black";
+          chartdivbutton.style.border = "none";
+          chartdivbutton.style.padding = "8px";
+          chartdivbutton.style.zIndex = 1000;
+          chartdivbutton.innerText = "Show Toxicity Scale";
+          chartdivbutton.style.visibility = "hidden";
+          chartdivbutton.style.border = "1px solid yellow";
+          chartdivbutton.addEventListener("click", function () {
+            if (chartdiv.style.visibility == "hidden") {
+              chartdiv.style.visibility = "visible";
+            } else {
+              chartdiv.style.visibility = "hidden";
+            }
+          });
+
+          document.body.appendChild(chartdiv);
+          document.body.appendChild(chartdivbutton);
+
           var i = 0;
           var text = "";
 
@@ -900,6 +919,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           }
 
+          text = text.substring(0, Math.min(text.length, 1000));
           var data = JSON.stringify({
             inputs: text,
           });
