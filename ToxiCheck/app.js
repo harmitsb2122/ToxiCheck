@@ -675,6 +675,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           // make dictionary with Boolean values for each sentence
           var dict = {};
           var currentElement = null;
+          var elementlist = null;
 
           //* Mouseover features and handling dynamic updates *//
           window.addEventListener("mouseover", async function () {
@@ -711,7 +712,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
             const elementlist1 = array1.concat(array2);
             const elementlist2 = elementlist1.concat(array3);
-            const elementlist = elementlist2.concat(array4);
+            elementlist = elementlist2.concat(array4);
             // const elementlist4 = elementlist3.concat(array5);
             // const elementlist = elementlist4.concat(array6);
 
@@ -864,11 +865,15 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           const collection1 = document.getElementsByClassName(
             "d-block comment-body markdown-body  js-comment-body"
           ); // github
-
+          const collection2 = document.getElementsByClassName(
+            "gh-header-title flex-auto wb-break-word f1 mr-0"
+          ); // github
           const array1 = [...collection1];
+          const array2 = [...collection2];
 
-          const elementlist = array1;
+          const elementlist = array1.concat(array2);
 
+          console.log(elementlist);
           if (elementlist.length == 0) return;
 
           var chartdiv = document.createElement("canvas");
@@ -916,80 +921,128 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
           var i = 0;
           var text = "";
-
-          for (i = 0; i < elementlist.length; i++) {
+          for (i = 0; i < Math.min(elementlist.length, 4); i++) {
             if (elementlist[i] && elementlist[i].innerText.length > 0) {
-              text += elementlist[i].innerText + "\n";
+              let innertext = elementlist[i].innerText;
+              // optimization to avoid 400 error , reducing network payload
+              innertext = innertext.substring(
+                0,
+                Math.min(innertext.length, 1000)
+              );
+              text += innertext + "\n";
+              let data = JSON.stringify({
+                inputs: text,
+              });
+
+              // populatiing chart values
+              await getResult(data).then((ans) => {
+                let toxic_score = 0.0;
+                let obscene_score = 0.0;
+                let insult_score = 0.0;
+                let identity_hate_score = 0.0;
+                let severley_toxic_score = 0.0;
+                let threat_score = 0.0;
+                let score = 0.0;
+                let value = 0;
+                for (let j = 0; j < 6; j++) {
+                  if (!ans) {
+                    break;
+                  }
+                  if (ans[j].label === "toxic") toxic_score += ans[j].score;
+                  else if (ans[j].label === "obscene")
+                    obscene_score += ans[j].score;
+                  else if (ans[j].label === "insult")
+                    insult_score += ans[j].score;
+                  else if (ans[j].label === "identity_hate")
+                    identity_hate_score += ans[j].score;
+                  else if (ans[j].label === "severe_toxic")
+                    severley_toxic_score += ans[j].score;
+                  else if (ans[j].label === "threat")
+                    threat_score += ans[j].score;
+
+                  score += ans[j].score;
+                }
+
+                if (score >= 1.5) {
+                  elementlist[i].style.filter = "blur(3px)";
+                }
+                elementlist[i].addEventListener("click", function () {
+                  this.style.filter = "none";
+                });
+                elementlist[i].addEventListener("mouseout", function () {
+                  if (score >= 1.5) this.style.filter = "blur(3px)";
+                });
+              });
             }
           }
-
-          // optimization to avoid 400 error , reducing network payload
-          text = text.substring(0, Math.min(text.length, 1000));
-          var data = JSON.stringify({
-            inputs: text,
-          });
-
-          // populatiing chart values
-          await getResult(data).then((ans) => {
-            chartdivbutton.style.visibility = "visible";
-            let element = document.getElementById("chartid");
-            if (element == null) return;
-            var myChart = new Chart(element, {
-              type: "bar",
-              data: {
-                labels: [
-                  ans[0].label,
-                  ans[1].label,
-                  ans[2].label,
-                  ans[3].label,
-                  ans[4].label,
-                  ans[5].label,
-                ],
-                datasets: [
-                  {
-                    label: "CyberBully Details",
-                    data: [
-                      ans[0].score,
-                      ans[1].score,
-                      ans[2].score,
-                      ans[3].score,
-                      ans[4].score,
-                      ans[5].score,
-                    ],
-                    backgroundColor: [
-                      "rgba(255, 99, 132, 0.2)",
-                      "rgba(54, 162, 235, 0.2)",
-                      "rgba(255, 206, 86, 0.2)",
-                      "rgba(75, 192, 192, 0.2)",
-                      "rgba(153, 102, 255, 0.2)",
-                      "rgba(255, 159, 64, 0.2)",
-                    ],
-
-                    borderColor: [
-                      "rgba(255,99,132,1)",
-                      "rgba(54, 162, 235, 1)",
-                      "rgba(255, 206, 86, 1)",
-                      "rgba(75, 192, 192, 1)",
-                      "rgba(153, 102, 255, 1)",
-                      "rgba(255, 159, 64, 1)",
-                    ],
-                    borderWidth: 1,
-                  },
-                ],
-              },
-              options: {
-                scales: {
-                  yAxes: [
+          if (text != "") {
+            // optimization to avoid 400 error , reducing network payload
+            text = text.substring(0, Math.min(text.length, 1000));
+            let data = JSON.stringify({
+              inputs: text,
+            });
+            await getResult(data).then((ans) => {
+              chartdivbutton.style.visibility = "visible";
+              let element = document.getElementById("chartid");
+              if (element == null) return;
+              var myChart = new Chart(element, {
+                type: "bar",
+                data: {
+                  labels: [
+                    ans[0].label,
+                    ans[1].label,
+                    ans[2].label,
+                    ans[3].label,
+                    ans[4].label,
+                    ans[5].label,
+                  ],
+                  datasets: [
                     {
-                      ticks: {
-                        beginAtZero: true,
-                      },
+                      label: "CyberBully Details",
+                      data: [
+                        ans[0].score,
+                        ans[1].score,
+                        ans[2].score,
+                        ans[3].score,
+                        ans[4].score,
+                        ans[5].score,
+                      ],
+                      backgroundColor: [
+                        "rgba(255, 99, 132, 0.2)",
+                        "rgba(54, 162, 235, 0.2)",
+                        "rgba(255, 206, 86, 0.2)",
+                        "rgba(75, 192, 192, 0.2)",
+                        "rgba(153, 102, 255, 0.2)",
+                        "rgba(255, 159, 64, 0.2)",
+                      ],
+
+                      borderColor: [
+                        "rgba(255,99,132,1)",
+                        "rgba(54, 162, 235, 1)",
+                        "rgba(255, 206, 86, 1)",
+                        "rgba(75, 192, 192, 1)",
+                        "rgba(153, 102, 255, 1)",
+                        "rgba(255, 159, 64, 1)",
+                      ],
+                      borderWidth: 1,
                     },
                   ],
                 },
-              },
+                options: {
+                  scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true,
+                          // max: 1,
+                        },
+                      },
+                    ],
+                  },
+                },
+              });
             });
-          });
+          }
         }
 
         $(document).ready(function () {
