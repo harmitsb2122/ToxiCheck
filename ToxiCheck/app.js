@@ -106,9 +106,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   {
     "sotagger.js": [
       function (require, module, exports) {
-        // * Segregating toxic/abusive words *//
+        /**
+         * Getting toxicity values
+         * @param {String} send_data Segregating toxic/abusive words
+         * @returns  response (object array)
+         */
         async function getResult(send_data) {
-          console.log(send_data);
           const options = {
             method: "POST",
             headers: {
@@ -138,9 +141,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
         }
 
-        // * Generating sentences *//
+        /**
+         * Generating sentences
+         * @param {String} send_data
+         * @returns response (object)
+         */
         async function genResult(send_data) {
-          console.log(send_data);
           const options = {
             method: "POST",
             headers: {
@@ -170,10 +176,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
         }
 
-        //****** MAIN CODE STARTS FROM HERE *****//
-
+        /**
+         * MAIN CODE STARTS FROM HERE
+         */
         function main() {
-          //* Suggestion Panel *//
+          /**
+           * Suggestion Panel
+           */
           var suggestPanel = document.createElement("div");
           suggestPanel.style.position = "fixed";
           suggestPanel.style.fontSize = "15px";
@@ -191,7 +200,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           suggestPanel.style.overflow = "auto"; // make panel scrollable
           suggestPanel.style.maxHeight = "2000px"; // set max height for panel
 
-          //* Chart Properties *//
+          /**
+           * Chart Properties
+           */
           var chartdiv = document.createElement("canvas");
           chartdiv.style.position = "fixed";
           chartdiv.style.borderRadius = "20px";
@@ -211,6 +222,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           chartdiv.style.maxHeight = "600px";
           chartdiv.style.maxWidth = "600px";
 
+          /**
+           * Chart Div Button
+           */
           var chartdivbutton = document.createElement("button");
           chartdivbutton.style.position = "fixed";
           chartdivbutton.style.borderRadius = "20px";
@@ -232,7 +246,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          //* Suggest Button *//
+          /**
+           * Suggest button
+           */
           var suggestButton = document.createElement("button");
           suggestButton.style.position = "fixed";
           suggestButton.style.borderRadius = "20px";
@@ -254,7 +270,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          //* highlight Button *//
+          /**
+           * Highlight Button
+           */
           var highlightButton = document.createElement("button");
           highlightButton.style.position = "fixed";
           highlightButton.style.borderRadius = "20px";
@@ -269,8 +287,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           highlightButton.style.visibility = "hidden";
           highlightButton.style.border = "1px solid blue";
 
-          //* Hover Button *//
-          // pops up above the currently hovered element
+          /**
+           * Hover button
+           * pops up above the currently hovered element
+           */
           var hoverButton = document.createElement("button");
           hoverButton.style.position = "fixed";
           hoverButton.style.borderRadius = "50%";
@@ -285,7 +305,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           hoverButton.style.visibility = "hidden";
           hoverButton.style.border = "1px solid yellow";
 
-          // toggle suggest panel
+          /**
+           * Toggle suggest panel
+           */
           hoverButton.addEventListener("click", function () {
             if (suggestPanel.style.visibility == "hidden") {
               suggestPanel.style.visibility = "visible";
@@ -294,8 +316,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          //* Check Button *//
-          // pops up above the currently hovered element
+          /**
+           * Check Button
+           * pops up above the currently hovered element
+           */
           var checkButton = document.createElement("button");
           checkButton.style.position = "fixed";
           checkButton.style.borderRadius = "50%";
@@ -317,16 +341,34 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           document.body.appendChild(hoverButton);
           document.body.appendChild(checkButton);
 
-          var currentElement = null; // refering to currently listened element
-          const target_sentences = new Set(); // using set to store target sentences
-          var currentState = 0; // state for managing flow in different sites
+          /**
+           * refering to currently listened element
+           */
+          var currentElement = null;
+          /**
+           * using set to store target sentences
+           */
+          const target_sentences = new Set();
+          /**
+           * state for managing flow in different sites
+           */
+          var currentState = 0;
+
+          /**
+           * On input event
+           */
           window.addEventListener("input", async function () {
             // TODO OPTIONAL : Intensity based coloring scheme
             // TODO OPTIONAL: Separate non-relevant text to words for phrases
+
             suggestPanel.innerHTML = "";
+
+            /**
+             * the collection of elements having input class
+             */
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
-            ); // the collection of elements having input class
+            );
 
             const array1 = [...collection1];
 
@@ -337,7 +379,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               elementlist[0] != null &&
               elementlist[0].innerText.length > 0
             ) {
-              currentState = 0; // state for gmail
+              /**
+               * state for gmail
+               */
+              currentState = 0;
               currentElement = elementlist[0];
 
               // TODO LATER: Preprocessing
@@ -346,12 +391,17 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
               // TODO LATER: Context - based phrase tokenization
 
-              const regex = /(?<=\.|\?|\!)\s+/; // regex pattern to tokenize the sentences
+              /**
+               * regex pattern to tokenize the sentences
+               */
+              const regex = /(?<=\.|\?|\!)\s+/;
               const sentences = text.split(regex);
 
               // TODO LATER: Context based paragaphs/ group of sentences
 
-              // iterating over the sentences and appending target (toxic) sentences
+              /**
+               * iterating over the sentences and appending target (toxic) sentences
+               */
               for (let j = 0; j < sentences.length - 1; j++) {
                 const currentSentence = sentences[j];
 
@@ -361,7 +411,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
                 await getResult(data).then((ans) => {
                   console.log(ans);
-                  // chartdiv.innerHTML = ans;
 
                   // * Defining the score metric *//
                   let toxic_score = 0.0;
@@ -391,7 +440,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     score += ans[j].score;
                   }
 
-                  // hardcoded parameter for toxicity scale
+                  /**
+                   * hardcoded parameter for toxicity scale
+                   */
                   if (score >= 1.5) {
                     target_sentences.add(currentSentence);
                   }
@@ -411,14 +462,22 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // * Events for Github Comment field *//
+          /**
+           * Events for Github Comment field
+           */
           window.addEventListener("input", async function () {
             suggestPanel.innerHTML = "";
             const element = document.getElementById("new_comment_field");
             if (element != null) {
-              currentState = 1; // state for github
+              /**
+               * state for github
+               */
+              currentState = 1;
               currentElement = element;
-              suggestButton.style.backgroundColor = "white"; // setting up according to github dark theme
+              /**
+               * setting up according to github dark theme
+               */
+              suggestButton.style.backgroundColor = "white";
               suggestButton.style.color = "black";
               suggestButton.style.border = "1px solid blue";
 
@@ -485,7 +544,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // * Gmail highlight feature *//
+          /**
+           * Gmail highlight feature
+           */
           highlightButton.addEventListener("click", function () {
             const collection1 = document.getElementsByClassName(
               "Am Al editable LW-avf tS-tW"
@@ -498,10 +559,14 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             if (currentState != 0) {
               return;
             }
-            //* Handling text to span conversion (recursive) *//
+            /**
+             * Handling text to span conversion (recursive)
+             */
             for (const sentence of target_sentences) {
               newtext = elementlist[0].innerText;
-              //* Handling recursive additions *//
+              /**
+               * Handling recursive additions
+               */
               let spanRegex = new RegExp(sentence, "g");
               newtext = newtext.replaceAll(
                 spanRegex,
@@ -511,13 +576,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // * Gmail Suggest feature *//
+          /**
+           * Gmail Suggest feature
+           */
           suggestButton.addEventListener("click", async function () {
             if (currentState != 0) return;
             suggestPanel.innerHTML = "";
             for (const sentence of target_sentences) {
-              //* Panel text *//
-
               var sentence_data = JSON.stringify({
                 inputs: sentence,
               });
@@ -533,17 +598,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               }
 
               var suggestPanelText = document.createElement("div");
-              suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
+              suggestPanelText.innerText = "Text : " + sentence;
               if (suggestion === " ")
                 suggestPanelText.innerText +=
                   "\nSuggestion : (Better to remove it)";
-              // this would be the suggested phrase
-              else suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
+              /**
+               * this would be the suggested phrase
+               */ else
+                suggestPanelText.innerText += "\nSuggestion : " + suggestion;
               suggestPanelText.style.marginBottom = "10px";
               suggestPanelText.style.padding = "5px";
               suggestPanel.appendChild(suggestPanelText);
 
-              //* Panel Buttons *//
+              /**
+               * Panel Buttons
+               */
               var suggestPanelButton = document.createElement("button");
               suggestPanelButton.innerText = "Close";
               suggestPanelButton.style.backgroundColor = "red";
@@ -569,7 +638,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               suggestPanelButton1.style.bottom = "2px";
               suggestPanelButton1.style.top = "2px";
 
-              //* Handling span to text conversion (non-recursive) *//
+              /**
+               * Handling span to text conversion (non-recursive)
+               */
               suggestPanelButton1.addEventListener("click", function () {
                 if (currentElement != null) {
                   if (
@@ -596,16 +667,19 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // * Events for suggest button for gmail *//
+          /**
+           * Events for suggest button for gmail
+           */
           suggestButton.addEventListener("click", async function () {
             if (currentState != 1) return;
             suggestPanel.innerHTML = "";
-            suggestPanel.style.backgroundColor = "#161b22"; //syled as per github page
+            /**
+             * syled as per github page
+             */
+            suggestPanel.style.backgroundColor = "#161b22";
             suggestPanel.style.border = "0.5px solid #7d8590";
 
             for (const sentence of target_sentences) {
-              //* Panel text *//
-
               var sentence_data = JSON.stringify({
                 inputs: sentence,
               });
@@ -621,17 +695,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               }
 
               var suggestPanelText = document.createElement("div");
-              suggestPanelText.innerText = "Text : " + sentence; // this would be the suggested phrase
+              suggestPanelText.innerText = "Text : " + sentence;
               if (suggestion === " ")
                 suggestPanelText.innerText +=
                   "\nSuggestion : (Better to remove it)";
-              // this would be the suggested phrase
-              else suggestPanelText.innerText += "\nSuggestion : " + suggestion; // this would be the suggested phrase
+              /**
+               * this would be the suggested phrase
+               */ else
+                suggestPanelText.innerText += "\nSuggestion : " + suggestion;
               suggestPanelText.style.marginBottom = "10px";
               suggestPanelText.style.padding = "5px";
               suggestPanel.appendChild(suggestPanelText);
 
-              //* Panel Buttons *//
+              /**
+               * Suggest Buttons
+               */
               var suggestPanelButton = document.createElement("button");
               suggestPanelButton.innerText = "Close";
               suggestPanelButton.style.backgroundColor = "red";
@@ -657,7 +735,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               suggestPanelButton1.style.bottom = "2px";
               suggestPanelButton1.style.top = "2px";
 
-              //* Handling span to text conversion (non-recursive) *//
+              /**
+               * Handling span to text conversion (non-recursive)
+               */
               suggestPanelButton1.addEventListener("click", function () {
                 if (currentElement != null) {
                   if (currentElement.value.includes(sentence)) {
@@ -672,14 +752,20 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
 
-          // make dictionary with Boolean values for each sentence
+          /**
+           * make dictionary with Boolean values for each sentence
+           */
           var dict = {};
           var currentElement = null;
           var elementlist = null;
 
-          //* Mouseover features and handling dynamic updates *//
+          /**
+           * Mouseover features and handling dynamic updates
+           */
           window.addEventListener("mouseover", async function () {
-            //* Dynamic Hover *//
+            /**
+             * Dynamic Hover
+             */
             const spanElements = document.querySelectorAll(
               "span[style='text-decoration: underline red;']"
             );
@@ -697,13 +783,21 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               });
             });
 
-            const collection1 = document.getElementsByClassName("ii gt"); // gmail
-            // const collection2 = document.getElementsByClassName("comment-copy");
+            /**
+             * gmail collection
+             */
+            const collection1 = document.getElementsByClassName("ii gt");
+            /**
+             * github collection
+             */
             const collection2 = document.getElementsByClassName(
               "comment-body markdown-body js-preview-body"
-            ); // github
-            const collection3 = document.getElementsByClassName("h3YV2d"); // play store comment section
-            const collection4 = document.getElementsByClassName("ras4vb"); // play store comment section
+            );
+            /**
+             * play store comments collection
+             */
+            const collection3 = document.getElementsByClassName("h3YV2d");
+            const collection4 = document.getElementsByClassName("ras4vb");
 
             const array1 = [...collection1];
             const array2 = [...collection2];
@@ -713,13 +807,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             const elementlist1 = array1.concat(array2);
             const elementlist2 = elementlist1.concat(array3);
             elementlist = elementlist2.concat(array4);
-            // const elementlist4 = elementlist3.concat(array5);
-            // const elementlist = elementlist4.concat(array6);
 
             if (elementlist[0] && elementlist[0].innerText.length > 0) {
               elementlist[0].addEventListener("mouseenter", async function () {
                 currentElement = elementlist[0];
-                // check if currentElement.innerText is a key in dict
+                /**
+                 * check if currentElement.innerText is a key in dict
+                 */
                 if (currentElement.innerText in dict) {
                   if (dict[currentElement.innerText] === true) {
                     currentElement.style.filter = "blur(3px)";
@@ -727,7 +821,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                     currentElement.style.filter = "none";
                   }
                 } else {
-                  // if not, add it to dict with value false
+                  /**
+                   * if not, add it to dict with value false
+                   */
                   console.log("here " + currentElement.innerText);
                   let text = currentElement.innerText;
                   text = text.substring(0, Math.min(text.length, 1000));
@@ -762,7 +858,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                   });
                 }
 
-                // get current position of element and assign it to checkButton based on position of currentElement
+                /**
+                 * get current position of element and assign it to checkButton based on position of currentElement
+                 */
                 var rect = elementlist[0].getBoundingClientRect();
                 checkButton.style.top =
                   rect.top - checkButton.offsetHeight - 1 + "px";
@@ -783,14 +881,18 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           });
           let currentChart = null;
-          //outside to avoid any mouseover issues
+          /**
+           * outside to avoid any mouseover issues
+           */
           checkButton.addEventListener("click", async function () {
             let text = currentElement.innerText;
             var data = JSON.stringify({
               inputs: text,
             });
 
-            // populating chart with the response values (toxic-bert)
+            /**
+             * populating chart with the response values (toxic-bert)
+             */
             await getResult(data).then((ans) => {
               chartdivbutton.style.visibility = "visible";
               let element = document.getElementById("chartid");
@@ -862,18 +964,23 @@ parcelRequire = (function (modules, cache, entry, globalName) {
         }
 
         async function scrapeWhole() {
+          /**
+           * github comment collection
+           */
           const collection1 = document.getElementsByClassName(
             "d-block comment-body markdown-body  js-comment-body"
-          ); // github
+          );
+          /**
+           * github header collection
+           */
           const collection2 = document.getElementsByClassName(
             "gh-header-title flex-auto wb-break-word f1 mr-0"
-          ); // github
+          );
           const array1 = [...collection1];
           const array2 = [...collection2];
 
           const elementlist = array1.concat(array2);
 
-          console.log(elementlist);
           if (elementlist.length == 0) return;
 
           var chartdiv = document.createElement("canvas");
@@ -924,7 +1031,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           for (i = 0; i < Math.min(elementlist.length, 4); i++) {
             if (elementlist[i] && elementlist[i].innerText.length > 0) {
               let innertext = elementlist[i].innerText;
-              // optimization to avoid 400 error , reducing network payload
+              /**
+               * optimization to avoid 400 error , reducing network payload
+               */
               innertext = innertext.substring(
                 0,
                 Math.min(innertext.length, 1000)
@@ -934,7 +1043,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
                 inputs: text,
               });
 
-              // populatiing chart values
+              /**
+               * populatiing chart values
+               */
               await getResult(data).then((ans) => {
                 let toxic_score = 0.0;
                 let obscene_score = 0.0;
@@ -976,7 +1087,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             }
           }
           if (text != "") {
-            // optimization to avoid 400 error , reducing network payload
+            /**
+             * optimization to avoid 400 error , reducing network payload
+             */
             text = text.substring(0, Math.min(text.length, 1000));
             let data = JSON.stringify({
               inputs: text,

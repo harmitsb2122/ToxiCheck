@@ -1,2 +1,5 @@
-CyberBullyingDetector/node_modules
+node_modules
+jsdoc
+package-lock.json
+ToxiCheck/node_modules
 API/models

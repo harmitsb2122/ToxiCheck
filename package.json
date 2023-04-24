@@ -1,0 +1,23 @@
+{
+  "name": "ToxiCheck",
+  "version": "1.0.0",
+  "description": "--- ML models and Demo Videos: https://drive.google.com/drive/folders/1ctXjEsxy5wiO33oEgOyOZ6eCPrFWmLbr?usp=share_link",
+  "main": "app.js",
+  "scripts": {
+    "jsdoc": "jsdoc -c jsdoc.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harmitsb2122/ToxiCheck.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harmitsb2122/ToxiCheck/issues"
+  },
+  "homepage": "https://github.com/harmitsb2122/ToxiCheck#readme",
+  "dependencies": {
+    "jsdoc": "^4.0.2"
+  }
+}
