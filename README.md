@@ -21,7 +21,7 @@ ToxiCheck is a Google Chrome Extension which primarily targets software develope
 
 ![Screenshot 2023-04-30 011019](https://user-images.githubusercontent.com/80470843/235321248-55b7b9c5-df7a-47a7-9fc5-f82a52de2efb.png)
 
-### An autosuggestor for Github
+### The Autosuggestor for Github
 
 <img src="https://user-images.githubusercontent.com/80470843/235321099-488ea1d0-5733-49ba-8797-696838492b6e.png"></img>
 
