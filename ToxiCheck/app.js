@@ -753,13 +753,44 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           });
 
           /**
-           * make dictionary with Boolean values for each sentence
+           *---------------------- caching logic ----------------------
            */
-          var dict = {};
+          const cache = {};
+          const cacheTime = 100000;
+          let cacheTimer = 0;
+
+          const getCacheTimer = (time) => {
+            const now = new Date().getTime();
+            if (cacheTimer < now + time) {
+              cacheTimer = now + time;
+            }
+            return cacheTimer;
+          };
+
+          const fetchWithCache = async (text, time) => {
+            let curText = JSON.parse(text).inputs;
+            const now = new Date().getTime();
+            if (!cache[curText] || cache[curText].cacheTimer < now) {
+              console.log(1111);
+              await getResult(text).then((ans) => {
+                console.log(ans);
+                cache[curText] = ans;
+                cache[curText].cacheTimer = getCacheTimer(time);
+                console.log(cache);
+                console.log(cache[curText]);
+              });
+            }
+
+            return cache[curText];
+          };
+          /**
+           *-----------------------------------------------------------
+           */
+
           var currentElement = null;
           var elementlist = null;
 
-          /**
+          /*
            * Mouseover features and handling dynamic updates
            */
           window.addEventListener("mouseover", async function () {
@@ -811,51 +842,30 @@ parcelRequire = (function (modules, cache, entry, globalName) {
             if (elementlist[0] && elementlist[0].innerText.length > 0) {
               elementlist[0].addEventListener("mouseenter", async function () {
                 currentElement = elementlist[0];
-                /**
-                 * check if currentElement.innerText is a key in dict
-                 */
-                if (currentElement.innerText in dict) {
-                  if (dict[currentElement.innerText] === true) {
-                    currentElement.style.filter = "blur(3px)";
-                  } else {
-                    currentElement.style.filter = "none";
+                console.log("here " + currentElement.innerText);
+                let text = currentElement.innerText;
+                text = text.substring(0, Math.min(text.length, 1000));
+                var data = JSON.stringify({
+                  inputs: text,
+                });
+
+                let score = 0.0;
+
+                let ans = await fetchWithCache(data, cacheTime);
+                console.log(ans);
+                // * Defining the score metric *//
+                for (let j = 0; j < 6; j++) {
+                  if (!ans) {
+                    break;
                   }
+                  score += ans[j].score;
+                }
+                if (score >= 1.5) {
+                  currentElement.style.filter = "blur(3px)";
+                  console.log("True condition");
                 } else {
-                  /**
-                   * if not, add it to dict with value false
-                   */
-                  console.log("here " + currentElement.innerText);
-                  let text = currentElement.innerText;
-                  text = text.substring(0, Math.min(text.length, 1000));
-                  var data = JSON.stringify({
-                    inputs: text,
-                  });
-
-                  let score = 0.0;
-
-                  await getResult(data).then((ans) => {
-                    // * Defining the score metric *//
-                    for (let j = 0; j < 6; j++) {
-                      if (!ans) {
-                        break;
-                      }
-
-                      score += ans[j].score;
-                    }
-                    if (score >= 1.5) {
-                      dict[currentElement.innerText] = true;
-                      console.log("True condition");
-                    } else {
-                      dict[currentElement.innerText] = false;
-                      console.log("False condition");
-                    }
-
-                    if (dict[currentElement.innerText] === true) {
-                      currentElement.style.filter = "blur(3px)";
-                    } else {
-                      currentElement.style.filter = "none";
-                    }
-                  });
+                  currentElement.style.filter = "none";
+                  console.log("False condition");
                 }
 
                 /**
