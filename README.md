@@ -8,21 +8,21 @@ ToxiCheck is a Google Chrome Extension which primarily targets software develope
 ## Flow Diagrams
 Working of the Bullying Classifier (Text Blurring Mechanism)
 
-<img src="https://github.com/harmitsb2122/ToxiCheck/assets/80470843/cecd305b-369e-4da2-90ec-3772ef95f971" height="500px" width = "800px"></img>
+![image](https://github.com/harmitsb2122/ToxiCheck/assets/80470843/cecd305b-369e-4da2-90ec-3772ef95f971)
 
 Working of the Autosuggestor (Suggestion Mechanism)
 
-<img src="https://github.com/harmitsb2122/ToxiCheck/assets/80470843/c7c28493-8c3d-412f-b15c-40b9c9ad46a6" height="500px" width = "800px"></img>
+![image](https://github.com/harmitsb2122/ToxiCheck/assets/80470843/c7c28493-8c3d-412f-b15c-40b9c9ad46a6)
 
 ## Major Features
 
 ### Toxicity Chart
 
-<img src="https://user-images.githubusercontent.com/80470843/235318719-f7dc54db-7e00-4299-84f6-009baf142f49.gif" height="500px" width = "800px"></img>
+![image](https://user-images.githubusercontent.com/80470843/235318719-f7dc54db-7e00-4299-84f6-009baf142f49.gif)
 
 ### Autosuggestor feature
 
-<img src="https://user-images.githubusercontent.com/80470843/235319414-18d4ea10-7bc9-49c4-afd2-dedfb30ee764.gif" height="500px" width = "800px"></img>
+![image](https://user-images.githubusercontent.com/80470843/235319414-18d4ea10-7bc9-49c4-afd2-dedfb30ee764.gif)
 
 ## Features for Github
 
@@ -32,7 +32,7 @@ Working of the Autosuggestor (Suggestion Mechanism)
 
 ### The Autosuggestor for Github
 
-<img src="https://user-images.githubusercontent.com/80470843/235321099-488ea1d0-5733-49ba-8797-696838492b6e.png"></img>
+![image](https://user-images.githubusercontent.com/80470843/235321099-488ea1d0-5733-49ba-8797-696838492b6e.png)
 
 ## Instructions
 1. Clone the repository
