@@ -40,10 +40,11 @@ Working of the Autosuggestor (Suggestion Mechanism)
 ```
 $ npm install
 ```
-3. Go to chrome browser and type 
+3. Edit the bearer token inside the app.js file with your huggingface (write enabled) token.
+4. Go to chrome browser and type 
 ```
 chrome://extensions/
 ```
-4. Click on Load Unpacked option and browse to the folder Toxicheck and select it.
-5. Enable/Reload the extension
-6. Navigate to the websites you wish
+5. Click on Load Unpacked option and browse to the folder Toxicheck and select it.
+6. Enable/Reload the extension
+7. Navigate to the websites you wish
