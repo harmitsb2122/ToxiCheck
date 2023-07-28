@@ -5,12 +5,9 @@ ToxiCheck is a Google Chrome Extension which primarily targets software develope
 
 [Demo Video](https://drive.google.com/file/d/1AHUO4LCQu2TPE0iGI-8iwmO2IL37kES1/view?usp=sharing)
 
-[Research Paper](https://drive.google.com/file/d/1BC9TlEyYpQfKP7NW-Kq5fn0fF4_2uBcE/view?usp=sharing)
-
 ## Flow Diagrams
 Working of the Bullying Classifier (Text Blurring Mechanism)
 
-<img src="https://github.com/harmitsb2122/ToxiCheck/assets/80470843/6b1bc4a9-e87d-4ecb-ada7-2252eada8f64" height="500px" width = "800px"></img>
 
 Working of the Autosuggestor (Suggestion Mechanism)
 
