@@ -3,6 +3,15 @@
 ## About
 ToxiCheck is a Google Chrome Extension which primarily targets software developer websites such as Github , detects cyberbullying on them, and provides toxicity reports on comments. Along with this , Toxicheck also assists the user in avoiding the use of toxic language by suggesting gentler alternatives as they type.
 
+## Technical Details
+Models used - 
+1. Toxic-BERT [[1]](https://huggingface.co/unitary/toxic-bert)
+2. BART-base-detox [[1]](https://aclanthology.org/2022.acl-long.469.pdf) [[2]](https://huggingface.co/s-nlp/bart-base-detox)
+
+UI -
+1. Vanilla JS
+2. Chart JS
+
 [Demo Video](https://drive.google.com/file/d/1AHUO4LCQu2TPE0iGI-8iwmO2IL37kES1/view?usp=sharing)
 
 ## Flow Diagrams
